@@ -10,6 +10,8 @@ import ExcursionsPage from './pages/ExcursionsPage';
 import ExcursionForm from './pages/ExcursionForm';
 import EventsPage from './pages/EventsPage';
 import EventForm from './pages/EventForm';
+import EventsView from './pages/EventsView'
+import EventDetailsPage from './pages/EventDetailsPage'
 import NotFound from './pages/NotFound';
 import ErrorPage from './pages/ErrorPage';
 
@@ -33,6 +35,8 @@ const App = () => {
                 <Route path="/events" element={<EventsPage/>} />
                 <Route path="/events/add" element={<EventForm/>} />
                 <Route path="/events/edit/:id" element={<EventForm/>} />
+                <Route path="/view/events" element={<EventsView/>} />
+                <Route path="/view/events/:id" element={<EventDetailsPage/>} />
                 <Route path="*" element={<NotFound/>} />
                 <Route path="/error" element={<ErrorPage />} />
             </Routes>

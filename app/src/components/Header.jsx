@@ -9,6 +9,7 @@ export default function Header() {
     const isLoggedIn = user && user.username !== null;
     const isAdmin = user?.roles.includes("ADMIN");
     const isEventManager = user?.roles.includes("EVENT_MANAGER");
+    const isVisitor = user?.roles.includes("VISITOR");
 
     useEffect(() => {
         fetchUser();
@@ -62,20 +63,27 @@ export default function Header() {
                             Events
                         </Link>
                     )}
-                    <Link
+                    {(!isLoggedIn || isVisitor) && (<Link
+                        to="/view/events"
+                        className="flex items-center gap-1 hover:text-green-200 transition"
+                    >
+                        <PartyPopper className="w-5 h-5" />
+                        Events
+                    </Link>)}
+                    {(!isLoggedIn || isVisitor) && (<Link
                         to="/animals"
                         className="flex items-center gap-1 hover:text-green-200 transition"
                     >
                         <PawPrint className="w-5 h-5" />
                         Animals
-                    </Link>
-                    <Link
+                    </Link>)}
+                    {(!isLoggedIn || isVisitor) && (<Link
                         to="/about"
                         className="flex items-center gap-1 hover:text-green-200 transition"
                     >
                         <Info className="w-5 h-5" />
                         About Us
-                    </Link>
+                    </Link>)}
 
                     {!loading && (
                         isLoggedIn ? (

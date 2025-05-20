@@ -6,7 +6,7 @@ import Pagination from "../components/Pagination";
 export default function EventsPage() {
     const [events, setEvents] = useState([]);
     const [page, setPage] = useState(1);
-    const [pageSize] = useState(4);
+    const [pageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
