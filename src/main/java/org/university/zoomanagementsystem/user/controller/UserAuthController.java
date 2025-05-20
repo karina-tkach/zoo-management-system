@@ -26,12 +26,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-public class UserRestController {
+public class UserAuthController {
 
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
 
-    public UserRestController(AuthenticationManager authenticationManager, UserService userService) {
+    public UserAuthController(AuthenticationManager authenticationManager, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
     }

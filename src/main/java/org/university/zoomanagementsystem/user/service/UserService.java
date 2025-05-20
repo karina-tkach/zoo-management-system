@@ -8,9 +8,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.university.zoomanagementsystem.user.Role;
 import org.university.zoomanagementsystem.user.User;
 import org.university.zoomanagementsystem.user.UserValidator;
 import org.university.zoomanagementsystem.user.repository.UserRepository;
+
+import java.util.List;
 
 
 @Service
@@ -115,4 +118,17 @@ public class UserService {
             throw exception;
         }
     }
+
+    public List<User> getUsersByRole(Role role) {
+        try {
+            logger.info("Try to get users by role");
+            List<User> users = userRepository.getUsersByRole(role);
+            logger.info("Users were fetched by role successfully");
+            return users;
+        } catch (DataAccessException exception) {
+            logger.warn("Users weren't fetched by role\n{}", exception.getMessage());
+            throw exception;
+        }
+    }
+
 }

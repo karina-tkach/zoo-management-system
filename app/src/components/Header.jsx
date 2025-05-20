@@ -1,4 +1,4 @@
-import { Home, PawPrint, Info, LogIn, LogOut, UserPlus, Users } from "lucide-react";
+import { Home, PawPrint, Info, LogIn, LogOut, UserPlus, Users, Map } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -7,6 +7,7 @@ export default function Header() {
     const navigate = useNavigate();
     const isLoggedIn = user && user.username !== null;
     const isAdmin = user?.roles.includes("ADMIN");
+    const isEventManager = user?.roles.includes("EVENT_MANAGER");
 
     const handleLogout = async () => {
         try {
@@ -42,6 +43,12 @@ export default function Header() {
                         <Link to="/staff" className="flex items-center gap-1 hover:text-green-200 transition">
                             <Users className="w-5 h-5" />
                             Staff
+                        </Link>
+                    )}
+                    {(isAdmin || isEventManager) && (
+                        <Link to="/excursions" className="flex items-center gap-1 hover:text-green-200 transition">
+                            <Map className="w-5 h-5" />
+                            Excursions
                         </Link>
                     )}
                     <Link

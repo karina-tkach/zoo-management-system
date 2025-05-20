@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 import Pagination from "../components/Pagination";
 
-export default function StaffPage() {
-    const [staff, setStaff] = useState([]);
+export default function ExcursionsPage() {
+    const [excursions, setExcursions] = useState([]);
     const [page, setPage] = useState(1);
     const [pageSize] = useState(7);
     const [totalPages, setTotalPages] = useState(1);
@@ -13,10 +13,10 @@ export default function StaffPage() {
     const { user, loading } = useAuth();
 
     useEffect(() => {
-        if (!loading && !user?.roles.includes("ADMIN")) {
+        if (!loading && !(user?.roles.includes("ADMIN") || user?.roles.includes("EVENT_MANAGER"))) {
             navigate("/error", {
                 state: {
-                    message: "Access Denied: Admins only",
+                    message: "Access Denied: Admins or event managers only",
                     code: 403,
                 },
             });
@@ -24,19 +24,19 @@ export default function StaffPage() {
     }, [user, loading, navigate]);
 
     useEffect(() => {
-        const fetchStaff = async () => {
+        const fetchExcursions = async () => {
             try {
-                const response = await fetch(`/api/staff?page=${page}&pageSize=${pageSize}`, {credentials: "include"});
+                const response = await fetch(`/api/excursions?page=${page}&pageSize=${pageSize}`, {credentials: "include"});
 
                 if (response.status === 200) {
-                    const staff = await response.json();
-                    setStaff(staff?.data);
-                    setTotalPages(staff?.totalPages);
+                    const excursions = await response.json();
+                    setExcursions(excursions?.data);
+                    setTotalPages(excursions?.totalPages);
                 } else {
                     const resData = await response.json();
                     navigate('/error', {
                         state: {
-                            message: resData.message || 'Failed to load staff data',
+                            message: resData.message || 'Failed to load excursions data',
                             code: response.status
                         }
                     });
@@ -51,23 +51,23 @@ export default function StaffPage() {
             }
         };
 
-        fetchStaff();
+        fetchExcursions();
     }, [page, pageSize]);
 
     const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this staff?")) {
+        if (window.confirm("Are you sure you want to delete this excursion?")) {
             try {
-                const res = await fetch(`/api/staff/${id}`, { method: "DELETE" });
+                const res = await fetch(`/api/excursions/${id}`, { method: "DELETE" });
                 const resData = await res.json();
 
                 if (res.ok) {
-                    setStaff(staff.filter((s) => s.id !== id));
-                    alert(resData.message || "Staff deleted successfully");
+                    setExcursions(excursions.filter((e) => e.id !== id));
+                    alert(resData.message || "Excursion deleted successfully");
                 } else {
-                    alert(resData.message || "Failed to delete staff");
+                    alert(resData.message || "Failed to delete excursion");
                 }
             } catch (error) {
-                alert("An error occurred while deleting staff.");
+                alert("An error occurred while deleting excursion.");
             }
         }
     };
@@ -87,13 +87,13 @@ export default function StaffPage() {
 
     return (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800 should-scroll">Staff List</h2>
+            <div className="flex justify-between items-center mb-6 should-scroll">
+                <h2 className="text-2xl font-semibold text-gray-800">Excursions List</h2>
                 <button
-                    onClick={() => navigate("/staff/add")}
+                    onClick={() => navigate("/excursions/add")}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow"
                 >
-                    Add Staff
+                    Add Excursion
                 </button>
             </div>
 
@@ -102,13 +102,15 @@ export default function StaffPage() {
                     <thead className="bg-gray-50">
                     <tr className="divide-x divide-gray-200">
                         {[
-                            "Name",
-                            "Email",
-                            "Role",
-                            "Hire Date",
-                            "Salary",
-                            "Working Days",
-                            "Shift",
+                            "Guide name",
+                            "Guide email",
+                            "Topic",
+                            "Description",
+                            "Date",
+                            "Start time",
+                            "Duration minutes",
+                            "Max participants",
+                            "Booked count",
                             "Actions",
                         ].map((header) => (
                             <th
@@ -121,42 +123,48 @@ export default function StaffPage() {
                     </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                    {staff.length === 0 ? (
+                    {excursions.length === 0 ? (
                         <tr>
                             <td
                                 colSpan={8}
                                 className="text-center py-4 text-gray-500 italic"
                             >
-                                No staff found
+                                No excursions found
                             </td>
                         </tr>
                     ) : (
-                        staff.map((s) => (
+                        excursions.map((s) => (
                             <tr key={s.id} className="hover:bg-gray-50 divide-x divide-gray-200">
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-900">
-                                    {s.name}
+                                    {s.guide.name}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.email}
+                                    {s.guide.email}
+                                </td>
+                                <td className="px-4 py-3 whitespace-normal break-words text-gray-700">
+                                    {s.topic}
+                                </td>
+                                <td className="px-4 py-3 whitespace-normal break-words text-gray-700">
+                                    {s.description}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.role}
+                                    {s.date}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.hireDate}
+                                    {s.startTime}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.salary}
+                                    {s.durationMinutes}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.workingDays}
+                                    {s.maxParticipants}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.shiftStart} - {s.shiftEnd}
+                                    {s.bookedCount}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap space-x-2">
                                     <button
-                                        onClick={() => navigate(`/staff/edit/${s.id}`)}
+                                        onClick={() => navigate(`/excursions/edit/${s.id}`)}
                                         className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
                                     >
                                         Update

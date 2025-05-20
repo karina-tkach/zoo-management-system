@@ -6,8 +6,11 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.university.zoomanagementsystem.user.Role;
 import org.university.zoomanagementsystem.user.User;
 import org.university.zoomanagementsystem.user.UserMapper;
+
+import java.util.List;
 
 
 @Repository
@@ -97,6 +100,18 @@ public class UserRepositoryImpl implements UserRepository {
             .addValue("id", id);
 
         jdbcTemplate.update(query, mapSqlParameterSource);
+    }
+
+    @Override
+    public List<User> getUsersByRole(Role role) {
+        String query = """
+        SELECT * FROM users WHERE role = :role
+        """;
+
+        SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+                .addValue("role", role.toString());
+
+        return jdbcTemplate.query(query, mapSqlParameterSource, UserMapper::mapToPojo);
     }
 
 }

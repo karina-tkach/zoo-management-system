@@ -171,7 +171,6 @@ export default function StaffForm() {
                         <option value="GUIDE">GUIDE</option>
                         <option value="TICKET_AGENT">TICKET_AGENT</option>
                         <option value="EVENT_MANAGER">EVENT_MANAGER</option>
-                        <option value="VISITOR">VISITOR</option>
                     </select>
                     {errors.role && <p className="text-red-500 text-sm mt-1">Role is required</p>}
                 </div>
