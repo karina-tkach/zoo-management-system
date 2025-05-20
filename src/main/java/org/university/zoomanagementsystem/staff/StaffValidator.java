@@ -80,6 +80,9 @@ public class StaffValidator {
         if (workingDays.isBlank()) {
             throw new StaffValidationException("Staff working days were empty");
         }
+        if(workingDays.length() > 100) {
+            throw new StaffValidationException("Working days length must be less than or equal to 100");
+        }
         Pattern pattern = Pattern.compile("^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)(,(Mon|Tue|Wed|Thu|Fri|Sat|Sun))*$");
         if (!pattern.matcher(workingDays).matches()) {
             throw new StaffValidationException("Staff working days format is invalid (must be Mon, Tue etc.)");

@@ -92,8 +92,11 @@ public class ExcursionValidator {
     }
 
     private void validateDurationMinutes(int durationMinutes) {
-        if (durationMinutes < 0) {
-            throw new ExcursionValidationException("Excursion duration minutes must be non-negative");
+        if (durationMinutes <= 0) {
+            throw new ExcursionValidationException("Excursion duration minutes must be positive");
+        }
+        if (durationMinutes > 480) {
+            throw new ExcursionValidationException("Excursion duration exceeds 8 hours");
         }
     }
 

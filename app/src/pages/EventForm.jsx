@@ -3,14 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../context/AuthContext';
 
-export default function ExcursionForm() {
+export default function EventForm() {
     const { id } = useParams();
     const isEdit = Boolean(id);
     const navigate = useNavigate();
     const [serverError, setServerError] = useState('');
     const { user, loading } = useAuth();
-    const [guides, setGuides] = useState([]);
-    const [guidesLoaded, setGuidesLoaded] = useState(false);
 
     const {
         register,
@@ -19,13 +17,13 @@ export default function ExcursionForm() {
         formState: { errors }
     } = useForm({
         defaultValues: {
-            topic: '',
-            guide: '',
+            title: '',
             description: '',
             date: '',
             startTime: '',
             durationMinutes: '',
-            maxParticipants: ''
+            location: '',
+            image: null
         }
     });
 
@@ -41,20 +39,20 @@ export default function ExcursionForm() {
     }, [user, loading, navigate]);
 
     useEffect(() => {
-        const fetchExcursion = async () => {
+        const fetchEvent = async () => {
             try {
-                const response = await fetch(`/api/excursions/${id}`, {credentials: "include"});
+                const response = await fetch(`/api/events/${id}`, {credentials: "include"});
 
                 if (response.status === 200) {
-                    const excursion = await response.json();
+                    const event = await response.json();
                     reset({
-                        topic: excursion.topic || '',
-                        guide: excursion.guide ? excursion.guide.id.toString() : '',
-                        description: excursion.description || '',
-                        date: excursion.date || '',
-                        startTime: excursion.startTime || '',
-                        durationMinutes: excursion.durationMinutes || '',
-                        maxParticipants: excursion.maxParticipants || ''
+                        title: event.title || '',
+                        description: event.description || '',
+                        date: event.date || '',
+                        startTime: event.startTime || '',
+                        durationMinutes: event.durationMinutes || '',
+                        location: event.location || '',
+                        image: null
                     });
                 } else {
                     const resData = await response.json();
@@ -75,60 +73,42 @@ export default function ExcursionForm() {
             }
         };
 
-        const fetchGuides = async () => {
-            try {
-                const response  = await fetch('/api/users/by-role?role=GUIDE', { credentials: 'include' });
+        if (isEdit) fetchEvent();
 
-                if (response.status === 200) {
-                    const guides = await response.json();
-                    setGuides(guides);
-                    setGuidesLoaded(true);
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load excursion data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
-                });
-            }
-        };
-
-        fetchGuides();
-        if (isEdit && guidesLoaded) fetchExcursion();
-
-    }, [id, isEdit, guidesLoaded, reset, navigate]);
+    }, [id, isEdit, reset, navigate]);
 
     const onSubmit = async (data) => {
-        const selectedGuide = guides.find(g => g.id.toString() === data.guide);
-        if (!selectedGuide) {
-            setServerError("Guide not found");
-            return;
-        }
-        data.guide = selectedGuide;
         setServerError('');
         const method = isEdit ? 'PATCH' : 'POST';
-        const url = isEdit ? `/api/excursions/${id}` : '/api/excursions';
+        const url = isEdit ? `/api/events/${id}` : '/api/events';
+
+        const formData = new FormData();
+
+        const eventPayload = {
+            title: data.title,
+            description: data.description,
+            date: data.date,
+            startTime: data.startTime,
+            durationMinutes: data.durationMinutes,
+            location: data.location,
+        };
+
+        formData.append("event", new Blob([JSON.stringify(eventPayload)], { type: "application/json" }));
+
+        if (data.image && data.image[0]) {
+            formData.append('image', data.image[0]);
+        }
 
         try {
             const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: formData,
                 credentials: 'include'
             });
 
             if (response.status === 200 || response.status === 201) {
-                alert(`Excursion ${isEdit ? 'updated' : 'added'} successfully`);
-                navigate('/excursions');
+                alert(`Event ${isEdit ? 'updated' : 'added'} successfully`);
+                navigate('/events');
             } else if (response.status === 400) {
                 const resData = await response.json();
                 setServerError(resData.message || 'Invalid input.');
@@ -166,37 +146,21 @@ export default function ExcursionForm() {
 
     return (
         <div className="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6">
-            <h2 className="text-2xl font-semibold mb-6 text-center">{isEdit ? 'Update Excursion' : 'Add Excursion'}</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-center">{isEdit ? 'Update Event' : 'Add Event'}</h2>
             {serverError && (
                 <div className="mb-4 text-red-700 bg-red-100 border border-red-300 rounded p-3 text-sm">
                     {serverError}
                 </div>
             )}
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" encType="multipart/form-data">
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Topic</label>
+                    <label className="block text-sm font-medium mb-1">Title</label>
                     <input
                         className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                        {...register('topic', {required: true})}
+                        {...register('title', {required: true})}
                     />
-                    {errors.topic && <p className="text-red-500 text-sm mt-1">Topic is required</p>}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Guide</label>
-                    <select
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                        {...register('guide', {required: true})}
-                    >
-                        <option value="" disabled>Select a guide</option>
-                        {guides.map((guide) => (
-                            <option key={guide.id} value={guide.id}>
-                                {guide.name} | {guide.email}
-                            </option>
-                        ))}
-                    </select>
-                    {errors.guide && <p className="text-red-500 text-sm mt-1">Guide is required</p>}
+                    {errors.title && <p className="text-red-500 text-sm mt-1">Title is required</p>}
                 </div>
 
                 <div>
@@ -230,12 +194,32 @@ export default function ExcursionForm() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-1">Max participants</label>
-                    <input type="number"
-                           className="w-full border border-gray-300 rounded-lg px-3 py-2" {...register('maxParticipants', {required: true})} />
-                    {errors.maxParticipants &&
-                        <p className="text-red-500 text-sm mt-1">Max participants is required</p>}
+                    <label className="block text-sm font-medium mb-1">Location</label>
+                    <input
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2" {...register('location', {required: true})} />
+                    {errors.location &&
+                        <p className="text-red-500 text-sm mt-1">Location is required</p>}
                 </div>
+
+                {isEdit && (<div className="mt-6 text-sm text-gray-600">
+                    Leave empty to keep current image
+                </div>)}
+
+                <div>
+                    <label className="block text-sm font-medium mb-1">Image</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        {...register('image', {
+                            required: !isEdit ? 'Image is required' : false
+                        })}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    />
+                    {errors.image && (
+                        <p className="text-red-500 text-sm mt-1">{errors.image.message}</p>
+                    )}
+                </div>
+
 
                 <div className="flex justify-between items-center mt-6">
                     <button
@@ -246,7 +230,7 @@ export default function ExcursionForm() {
                     </button>
                     <button
                         type="button"
-                        onClick={() => navigate('/excursions')}
+                        onClick={() => navigate('/events')}
                         className="bg-gray-300 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-400 transition"
                     >
                         Cancel

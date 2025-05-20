@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@PreAuthorize("hasAnyAuthority('ADMIN', 'EVENT_MANAGER')")
 @RequestMapping("/api/excursions")
 public class ExcursionController {
     private final ExcursionService excursionService;
@@ -38,18 +37,21 @@ public class ExcursionController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('EVENT_MANAGER')")
     @PostMapping
     public ResponseEntity<Excursion> addExcursion(@RequestBody Excursion excursion) {
         Excursion createdExcursion = excursionService.addExcursion(excursion);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdExcursion);
     }
 
+    @PreAuthorize("hasAuthority('EVENT_MANAGER')")
     @PatchMapping("/{id}")
     public ResponseEntity<Excursion> updateExcursion(@PathVariable int id, @RequestBody Excursion excursion) {
         Excursion updatedExcursion = excursionService.updateExcursionById(excursion, id);
         return ResponseEntity.ok(updatedExcursion);
     }
 
+    @PreAuthorize("hasAuthority('EVENT_MANAGER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteStaff(@PathVariable int id) {
         excursionService.deleteExcursionById(id);

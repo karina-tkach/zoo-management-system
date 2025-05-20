@@ -13,10 +13,10 @@ export default function ExcursionsPage() {
     const { user, loading } = useAuth();
 
     useEffect(() => {
-        if (!loading && !(user?.roles.includes("ADMIN") || user?.roles.includes("EVENT_MANAGER"))) {
+        if (!loading && !user?.roles.includes("EVENT_MANAGER")) {
             navigate("/error", {
                 state: {
-                    message: "Access Denied: Admins or event managers only",
+                    message: "Access Denied: Event managers only",
                     code: 403,
                 },
             });
@@ -86,8 +86,8 @@ export default function ExcursionsPage() {
         );
 
     return (
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex justify-between items-center mb-6 should-scroll">
+        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">
+            <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold text-gray-800">Excursions List</h2>
                 <button
                     onClick={() => navigate("/excursions/add")}

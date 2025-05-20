@@ -8,6 +8,8 @@ import StaffPage from './pages/StaffPage';
 import StaffForm from './pages/StaffForm';
 import ExcursionsPage from './pages/ExcursionsPage';
 import ExcursionForm from './pages/ExcursionForm';
+import EventsPage from './pages/EventsPage';
+import EventForm from './pages/EventForm';
 import NotFound from './pages/NotFound';
 import ErrorPage from './pages/ErrorPage';
 
@@ -18,7 +20,7 @@ const App = () => {
         <>
             <Header />
             <Routes>
-                <Route path="/" element={<HomePage/>}/>
+                <Route path="/" element={<HomePage/>} />
                 <Route path="/login" element={<LoginPage/>}/>
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/about" element={<AboutPage/>} />
@@ -28,6 +30,9 @@ const App = () => {
                 <Route path="/excursions" element={<ExcursionsPage/>} />
                 <Route path="/excursions/add" element={<ExcursionForm/>} />
                 <Route path="/excursions/edit/:id" element={<ExcursionForm/>} />
+                <Route path="/events" element={<EventsPage/>} />
+                <Route path="/events/add" element={<EventForm/>} />
+                <Route path="/events/edit/:id" element={<EventForm/>} />
                 <Route path="*" element={<NotFound/>} />
                 <Route path="/error" element={<ErrorPage />} />
             </Routes>
