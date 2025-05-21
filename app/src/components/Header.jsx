@@ -1,4 +1,4 @@
-import { Home, PawPrint, Info, LogIn, LogOut, UserPlus, Users, Map, PartyPopper } from "lucide-react";
+import { Home, PawPrint, Info, LogIn, LogOut, UserPlus, Users, Map, PartyPopper, Currency } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {useEffect} from "react";
@@ -10,6 +10,7 @@ export default function Header() {
     const isAdmin = user?.roles.includes("ADMIN");
     const isEventManager = user?.roles.includes("EVENT_MANAGER");
     const isVisitor = user?.roles.includes("VISITOR");
+    const isTicketAgent = user?.roles.includes("TICKET_AGENT");
 
     useEffect(() => {
         fetchUser();
@@ -52,45 +53,58 @@ export default function Header() {
                         </Link>
                     )}
                     {!loading && isEventManager && (
-                        <Link to="/excursions" className="flex items-center gap-1 hover:text-green-200 transition">
+                        <>
+                            <Link to="/excursions" className="flex items-center gap-1 hover:text-green-200 transition">
                             <Map className="w-5 h-5" />
                             Excursions
                         </Link>
-                    )}
-                    {!loading && isEventManager && (
                         <Link to="/events" className="flex items-center gap-1 hover:text-green-200 transition">
+                        <PartyPopper className="w-5 h-5" />
+                        Events
+                        </Link>
+                        </>
+                    )}
+                    {!loading && isTicketAgent && (
+                        <>
+                            <Link to="/pricings" className="flex items-center gap-1 hover:text-green-200 transition">
+                                <Currency className="w-5 h-5" />
+                                Ticket Pricings
+                            </Link>
+                            {/*<Link to="/events" className="flex items-center gap-1 hover:text-green-200 transition">
+                                <PartyPopper className="w-5 h-5" />
+                                Events
+                            </Link>*/}
+                        </>
+                    )}
+                    {(!isLoggedIn || isVisitor) && (
+                        <><Link
+                            to="/view/events"
+                            className="flex items-center gap-1 hover:text-green-200 transition"
+                        >
                             <PartyPopper className="w-5 h-5" />
                             Events
                         </Link>
-                    )}
-                    {(!isLoggedIn || isVisitor) && (<Link
-                        to="/view/events"
-                        className="flex items-center gap-1 hover:text-green-200 transition"
-                    >
-                        <PartyPopper className="w-5 h-5" />
-                        Events
-                    </Link>)}
-                    {(!isLoggedIn || isVisitor) && (<Link
-                        to="/view/excursions"
-                        className="flex items-center gap-1 hover:text-green-200 transition"
-                    >
-                        <Map className="w-5 h-5" />
-                        Excursions
-                    </Link>)}
-                    {(!isLoggedIn || isVisitor) && (<Link
+                        <Link
+                            to="/view/excursions"
+                            className="flex items-center gap-1 hover:text-green-200 transition"
+                        >
+                            <Map className="w-5 h-5" />
+                            Excursions
+                        </Link>
+                        <Link
                         to="/animals"
                         className="flex items-center gap-1 hover:text-green-200 transition"
                     >
                         <PawPrint className="w-5 h-5" />
                         Animals
-                    </Link>)}
-                    {(!isLoggedIn || isVisitor) && (<Link
+                    </Link>
+                        <Link
                         to="/about"
                         className="flex items-center gap-1 hover:text-green-200 transition"
-                    >
+                        >
                         <Info className="w-5 h-5" />
                         About Us
-                    </Link>)}
+                        </Link></>)}
 
                     {!loading && (
                         isLoggedIn ? (
