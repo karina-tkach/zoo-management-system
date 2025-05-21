@@ -71,6 +71,13 @@ export default function Header() {
                         Events
                     </Link>)}
                     {(!isLoggedIn || isVisitor) && (<Link
+                        to="/view/excursions"
+                        className="flex items-center gap-1 hover:text-green-200 transition"
+                    >
+                        <Map className="w-5 h-5" />
+                        Excursions
+                    </Link>)}
+                    {(!isLoggedIn || isVisitor) && (<Link
                         to="/animals"
                         className="flex items-center gap-1 hover:text-green-200 transition"
                     >

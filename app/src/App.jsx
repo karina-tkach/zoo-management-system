@@ -12,6 +12,7 @@ import EventsPage from './pages/EventsPage';
 import EventForm from './pages/EventForm';
 import EventsView from './pages/EventsView'
 import EventDetailsPage from './pages/EventDetailsPage'
+import ExcursionsView from './pages/ExcursionsView'
 import NotFound from './pages/NotFound';
 import ErrorPage from './pages/ErrorPage';
 
@@ -37,6 +38,7 @@ const App = () => {
                 <Route path="/events/edit/:id" element={<EventForm/>} />
                 <Route path="/view/events" element={<EventsView/>} />
                 <Route path="/view/events/:id" element={<EventDetailsPage/>} />
+                <Route path="/view/excursions" element={<ExcursionsView/>} />
                 <Route path="*" element={<NotFound/>} />
                 <Route path="/error" element={<ErrorPage />} />
             </Routes>
