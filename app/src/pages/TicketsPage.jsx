@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 import Pagination from "../components/Pagination";
+import SearchBar from "../components/SearchBar";
 
 export default function TicketsPage() {
     const [tickets, setTickets] = useState([]);
@@ -11,14 +12,6 @@ export default function TicketsPage() {
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
     const { user, loading } = useAuth();
-
-    const filteredTickets = filter(tickets, searchQuery);
-    const { currentTickets, totalPages } = paginate(tickets, page, pageSize);
-
-    useEffect(() => {
-        setPage(1);
-        setShouldScroll(false);
-    }, [searchQuery]);
 
     useEffect(() => {
         if (!loading && !user?.roles.includes("TICKET_AGENT")) {
@@ -30,6 +23,11 @@ export default function TicketsPage() {
             });
         }
     }, [user, loading, navigate]);
+
+    useEffect(() => {
+        setPage(1);
+        setShouldScroll(false);
+    }, [searchQuery]);
 
     useEffect(() => {
         const fetchTickets = async () => {
@@ -59,40 +57,25 @@ export default function TicketsPage() {
         };
 
         fetchTickets();
-    }, [page]);
+    }, []);
 
     const filter = (data, searchQuery) => {
-        return posts.filter((d) =>
-            d.title.toLowerCase().includes(searchQuery.toLowerCase())
+        return data.filter((d) =>
+            (d.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || d.uuid.toLowerCase().includes(searchQuery.toLowerCase()))
         );
     };
 
-    const paginatePosts = (posts, currentPage, postsPerPage) => {
+    const paginate = (data, currentPage, postsPerPage) => {
         const indexOfLastPost = currentPage * postsPerPage;
         const indexOfFirstPost = indexOfLastPost - postsPerPage;
         return {
-            currentPosts: posts.slice(indexOfFirstPost, indexOfLastPost),
-            totalPages: Math.ceil(posts.length / postsPerPage),
+            currentTickets: data.slice(indexOfFirstPost, indexOfLastPost),
+            totalPages: Math.ceil(data.length / postsPerPage),
         };
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this excursion?")) {
-            try {
-                const res = await fetch(`/api/excursions/${id}`, { method: "DELETE" });
-                const resData = await res.json();
-
-                if (res.ok) {
-                    setExcursions(excursions.filter((e) => e.id !== id));
-                    alert(resData.message || "Excursion deleted successfully");
-                } else {
-                    alert(resData.message || "Failed to delete excursion");
-                }
-            } catch (error) {
-                alert("An error occurred while deleting excursion.");
-            }
-        }
-    };
+    const filteredTickets = filter(tickets, searchQuery);
+    const { currentTickets, totalPages } = paginate(filteredTickets, page, pageSize);
 
     if (loading)
         return (
@@ -110,29 +93,29 @@ export default function TicketsPage() {
     return (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800">Excursions List</h2>
+                <h2 className="text-2xl font-semibold text-gray-800">Tickets List</h2>
                 <button
-                    onClick={() => navigate("/excursions/add")}
+                    onClick={() => navigate("/tickets/add")}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow"
                 >
-                    Add Excursion
+                    Add Offline Ticket
                 </button>
             </div>
 
-            <div className="overflow-x-auto border border-gray-200 rounded-md shadow-sm">
+            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+
+            <div className="overflow-x-auto border border-gray-200 rounded-md shadow-sm mt-5">
                 <table className="min-w-[1000px] divide-y divide-gray-200 w-full">
                     <thead className="bg-gray-50">
                     <tr className="divide-x divide-gray-200">
                         {[
-                            "Guide name",
-                            "Guide email",
-                            "Topic",
-                            "Description",
-                            "Date",
-                            "Start time",
-                            "Duration minutes",
-                            "Max participants",
-                            "Booked count",
+                            "UUID",
+                            "Full name",
+                            "Ticket type",
+                            "Visit type",
+                            "Price",
+                            "Visit date",
+                            "Purchase method",
                             "Actions",
                         ].map((header) => (
                             <th
@@ -145,57 +128,45 @@ export default function TicketsPage() {
                     </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                    {excursions.length === 0 ? (
+                    {currentTickets.length === 0 ? (
                         <tr>
                             <td
                                 colSpan={8}
                                 className="text-center py-4 text-gray-500 italic"
                             >
-                                No excursions found
+                                No tickets found
                             </td>
                         </tr>
                     ) : (
-                        excursions.map((s) => (
+                        currentTickets.map((s) => (
                             <tr key={s.id} className="hover:bg-gray-50 divide-x divide-gray-200">
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-900">
-                                    {s.guide.name}
+                                    {s.uuid}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.guide.email}
+                                    {s.fullName}
                                 </td>
                                 <td className="px-4 py-3 whitespace-normal break-words text-gray-700">
-                                    {s.topic}
+                                    {s.ticketType}
                                 </td>
                                 <td className="px-4 py-3 whitespace-normal break-words text-gray-700">
-                                    {s.description}
+                                    {s.visitType}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.date}
+                                    {s.price}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.startTime}
+                                    {s.visitDate}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.durationMinutes}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.maxParticipants}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.bookedCount}
+                                    {s.purchaseMethod}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap space-x-2">
                                     <button
-                                        onClick={() => navigate(`/excursions/edit/${s.id}`)}
+                                        onClick={() => navigate(`/tickets/${s.id}`)}
                                         className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
                                     >
-                                        Update
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(s.id)}
-                                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
-                                    >
-                                        Delete
+                                        View Details
                                     </button>
                                 </td>
                             </tr>

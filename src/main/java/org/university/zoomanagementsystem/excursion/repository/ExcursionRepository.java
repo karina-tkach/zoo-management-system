@@ -16,4 +16,6 @@ public interface ExcursionRepository {
     List<Excursion> getExcursionsWithPagination(int pageNumber, int limit);
 
     int getExcursionsRowsCount();
+
+    List<Excursion> getAvailableExcursions();
 }

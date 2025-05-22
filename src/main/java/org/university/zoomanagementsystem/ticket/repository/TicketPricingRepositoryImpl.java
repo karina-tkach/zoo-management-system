@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.university.zoomanagementsystem.ticket.TicketPricing;
 import org.university.zoomanagementsystem.ticket.TicketPricingMapper;
 
+import java.sql.Types;
 import java.util.List;
 
 @Repository
@@ -61,8 +62,8 @@ public class TicketPricingRepositoryImpl implements TicketPricingRepository {
             """;
 
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue("ticket_type", ticketType)
-                .addValue("visit_type", visitType);
+                .addValue("ticket_type", ticketType, Types.OTHER)
+                .addValue("visit_type", visitType, Types.OTHER);
 
         return namedParameterJdbcTemplate.query(query, mapSqlParameterSource, TicketPricingMapper::mapToPojo)
                 .stream()

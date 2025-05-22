@@ -63,4 +63,10 @@ public class ExcursionController {
         Excursion excursion = excursionService.getExcursionById(id);
         return ResponseEntity.ok(excursion);
     }
+
+    @PreAuthorize("hasAuthority('TICKET_AGENT')")
+    @GetMapping("/available")
+    public ResponseEntity<List<Excursion>> getAvailableExcursions() {
+        return ResponseEntity.ok(excursionService.getAvailableExcursions());
+    }
 }

@@ -127,6 +127,20 @@ public class ExcursionRepositoryImpl implements ExcursionRepository {
         return (count != null) ? count : 0;
     }
 
+    @Override
+    public List<Excursion> getAvailableExcursions() {
+        String query = """
+        SELECT 
+            e.*, u.name, u.email, u.role
+        FROM excursions e
+        JOIN users u ON e.guide_id = u.id
+        WHERE e.booked_count < e.max_participants
+        ORDER BY e.date, e.start_time
+    """;
+
+        return jdbcTemplate.query(query, ExcursionMapper::mapToPojo);
+    }
+
     private static int getOffset(int pageNumber, int pageSize) {
         return (pageNumber - 1) * pageSize;
     }

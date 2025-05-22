@@ -14,8 +14,9 @@ import EventsView from './pages/EventsView'
 import EventDetailsPage from './pages/EventDetailsPage'
 import ExcursionsView from './pages/ExcursionsView'
 import TicketPricings from "./pages/TicketPricings";
-
+import TicketsPage from "./pages/TicketsPage";
 import Ticket from "./pages/Ticket";
+import TicketAddForm from "./pages/TicketAddForm"
 import NotFound from './pages/NotFound';
 import ErrorPage from './pages/ErrorPage';
 
@@ -43,8 +44,9 @@ const App = () => {
                 <Route path="/view/events/:id" element={<EventDetailsPage/>} />
                 <Route path="/view/excursions" element={<ExcursionsView/>} />
                 <Route path="/pricings" element={<TicketPricings/>} />
-
+                <Route path="/tickets" element={<TicketsPage/>} />
                 <Route path="/tickets/:id" element={<Ticket/>} />
+                <Route path="/tickets/add" element={<TicketAddForm/>} />
                 <Route path="*" element={<NotFound/>} />
                 <Route path="/error" element={<ErrorPage />} />
             </Routes>

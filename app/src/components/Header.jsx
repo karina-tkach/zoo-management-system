@@ -1,4 +1,5 @@
-import { Home, PawPrint, Info, LogIn, LogOut, UserPlus, Users, Map, PartyPopper, Currency } from "lucide-react";
+import { Home, PawPrint, Info, LogIn, LogOut, UserPlus, Users, Map, PartyPopper, Currency,
+Ticket} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {useEffect} from "react";
@@ -33,7 +34,9 @@ export default function Header() {
             });
         }
     };
-
+    if (loading) {
+        return <></>;
+    }
     return (
         <header className="w-full bg-green-800 shadow-md py-4 px-6">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -46,13 +49,13 @@ export default function Header() {
                 </Link>
 
                 <nav className="flex items-center gap-6 text-white font-medium">
-                    {!loading && isAdmin && (
+                    {isAdmin && (
                         <Link to="/staff" className="flex items-center gap-1 hover:text-green-200 transition">
                             <Users className="w-5 h-5" />
                             Staff
                         </Link>
                     )}
-                    {!loading && isEventManager && (
+                    {isEventManager && (
                         <>
                             <Link to="/excursions" className="flex items-center gap-1 hover:text-green-200 transition">
                             <Map className="w-5 h-5" />
@@ -64,15 +67,19 @@ export default function Header() {
                         </Link>
                         </>
                     )}
-                    {!loading && isTicketAgent && (
+                    {isTicketAgent && (
                         <>
                             <Link to="/pricings" className="flex items-center gap-1 hover:text-green-200 transition">
                                 <Currency className="w-5 h-5" />
                                 Ticket Pricings
                             </Link>
-                            {/*<Link to="/events" className="flex items-center gap-1 hover:text-green-200 transition">
+                            <Link to="/tickets" className="flex items-center gap-1 hover:text-green-200 transition">
+                                <Ticket className="w-5 h-5" />
+                                Tickets
+                            </Link>
+                            {/*<Link to="/visits" className="flex items-center gap-1 hover:text-green-200 transition">
                                 <PartyPopper className="w-5 h-5" />
-                                Events
+                                Visits
                             </Link>*/}
                         </>
                     )}
@@ -106,7 +113,7 @@ export default function Header() {
                         About Us
                         </Link></>)}
 
-                    {!loading && (
+                    {
                         isLoggedIn ? (
                             <button
                                 onClick={handleLogout}
@@ -132,7 +139,7 @@ export default function Header() {
                                     Sign Up
                                 </Link>
                             </>
-                        )
+                        
                     )}
                 </nav>
             </div>

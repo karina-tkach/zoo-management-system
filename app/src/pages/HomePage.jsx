@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import React, { useRef, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import {
@@ -18,6 +18,7 @@ import zoo2 from "../assets/zoo2.jpg";
 import zoo3 from "../assets/zoo3.jpg";
 import zoo4 from "../assets/zoo4.jpg";
 import zoo5 from "../assets/zoo5.jpg";
+import {useAuth} from "../context/AuthContext.jsx";
 
 const images = [
     { id: 1, src: zoo1, alt: "Lion resting" },
@@ -29,6 +30,7 @@ const images = [
 
 export default function HomePage() {
     const sliderRef = useRef(null);
+    const {loading} = useAuth();
 
     const handlePrev = useCallback(() => {
         if (sliderRef.current) {
@@ -41,6 +43,19 @@ export default function HomePage() {
             sliderRef.current.swiper.slideNext();
         }
     }, []);
+
+    if (loading)
+        return (
+            <div className="relative p-6 min-h-screen bg-gray-200">
+
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center z-50">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid mx-auto mb-4" />
+                        <p className="text-xl font-semibold text-gray-700">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        );
 
     return (
         <div

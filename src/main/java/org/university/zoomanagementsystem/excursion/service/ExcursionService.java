@@ -115,4 +115,16 @@ public class ExcursionService {
             throw exception;
         }
     }
+
+    public List<Excursion> getAvailableExcursions() {
+        try {
+            logger.info("Try to get available excursions");
+            List<Excursion> excursions = excursionRepository.getAvailableExcursions();
+            logger.info("Available excursions were fetched successfully");
+            return excursions;
+        } catch (DataAccessException exception) {
+            logger.warn("Available excursions weren't fetched \n{}", exception.getMessage());
+            throw exception;
+        }
+    }
 }

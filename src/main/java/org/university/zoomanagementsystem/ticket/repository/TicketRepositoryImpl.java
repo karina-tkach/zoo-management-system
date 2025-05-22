@@ -30,7 +30,7 @@ public class TicketRepositoryImpl implements TicketRepository {
 
         KeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue("uuid", ticket.getUuid().toString())
+                .addValue("uuid", ticket.getUuid())
                 .addValue("full_name", ticket.getFullName())
                 .addValue("pricing_id", pricingId)
                 .addValue("visit_date", Date.valueOf(ticket.getVisitDate()))
