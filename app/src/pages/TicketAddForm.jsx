@@ -158,7 +158,7 @@ export default function TicketAddForm() {
                         <select className="w-full border border-gray-300 rounded-lg px-3 py-2" {...register('excursionId', { required: true })}>
                             <option value="">Select excursion</option>
                             {excursions.map(e => (
-                                <option key={e.id} value={e.id}>{`${e.topic} | ${e.date} | ${e.startTime}`}</option>
+                                <option key={e.id} value={e.id}>{`${e.topic} | ${e.date} | ${e.startTime} | Available: ${e.maxParticipants-e.bookedCount}`}</option>
                             ))}
                         </select>
                         {errors.excursionId && <p className="text-red-500 text-sm mt-1">Excursion is required</p>}

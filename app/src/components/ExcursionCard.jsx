@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 
-export default function ExcursionCard({ excursion }) {
+export default function ExcursionCard({ excursion, onBook }) {
     const { user } = useAuth();
     const isLoggedIn = user && user.username !== null;
 
@@ -38,13 +38,14 @@ export default function ExcursionCard({ excursion }) {
                     {isLoggedIn ? (
                         <div className="mt-4 flex justify-center">
                             <button
+                                onClick={() => onBook(excursion)}
                                 className="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition"
                             >
                                 Book Now
                             </button>
                         </div>
                     ) :
-                    <p className="pt-2 text-center text-sm space-y-2 italic">Log in to book this excursion</p>}
+                    <p className="pt-2 text-center text-red-600 text-sm space-y-2 italic">Log in to book this excursion</p>}
                 </div>
             </div>
         </div>

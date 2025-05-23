@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Pagination from "../components/Pagination";
 import ExcursionCard from "../components/ExcursionCard";
+import TicketFormModal from "../components/TicketFormModal.jsx";
 
 export default function ExcursionsView() {
     const [excursions, setExcursions] = useState([]);
@@ -11,7 +12,8 @@ export default function ExcursionsView() {
     const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
-    const { loading } = useAuth();
+    const { user,  loading } = useAuth();
+    const [selectedExcursion, setSelectedExcursion] = useState(null);
 
 
     useEffect(() => {
@@ -62,7 +64,7 @@ export default function ExcursionsView() {
         <div className="bg-gradient-to-br from-green-50 py-8 px-8 to-green-100 scroll-target">
             <div className="min-h-[600px] py-8 px-4 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {excursions.map((excursion) => (
-                    <ExcursionCard key={excursion.id} excursion={excursion}/>
+                    <ExcursionCard key={excursion.id} excursion={excursion} onBook={() => setSelectedExcursion(excursion)}/>
                 ))}
             </div>
 
@@ -73,6 +75,15 @@ export default function ExcursionsView() {
                 shouldScroll={shouldScroll}
                 setShouldScroll={setShouldScroll}
             />
+
+            {selectedExcursion && (
+                <TicketFormModal
+                    visitType={"EXCURSION"}
+                    excursion={selectedExcursion}
+                    onClose={() => setSelectedExcursion(null)}
+                />
+            )}
+
         </div>
     );
 };

@@ -10,7 +10,7 @@ CREATE TABLE tickets (
 );
 INSERT INTO tickets (uuid, full_name, pricing_id, visit_date, excursion_id, purchase_method) VALUES
                                                                                                  (gen_random_uuid(), 'Alice Johnson', 1, '2025-06-01', NULL, 'ONLINE'),
-                                                                                                 (gen_random_uuid(), 'Bob Smith', 2, '2025-06-03', 1, 'OFFLINE'),
+                                                                                                 (gen_random_uuid(), 'Bob Smith', 2, CURRENT_DATE + INTERVAL '5 days', 1, 'OFFLINE'),
                                                                                                  (gen_random_uuid(), 'Charlie Davis', 3, '2025-06-05', NULL, 'ONLINE'),
                                                                                                  (gen_random_uuid(), 'Diana Lopez', 1, '2025-06-02', NULL, 'OFFLINE'),
-                                                                                                 (gen_random_uuid(), 'Ethan Clark', 2, '2025-06-04', 1, 'ONLINE');
+                                                                                                 (gen_random_uuid(), 'Ethan Clark', 2, CURRENT_DATE + INTERVAL '5 days', 1, 'ONLINE');

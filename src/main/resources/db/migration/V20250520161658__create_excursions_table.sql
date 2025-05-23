@@ -24,8 +24,8 @@ CREATE TRIGGER trigger_cleanup_old_excursions
                         FOR EACH STATEMENT
                         EXECUTE FUNCTION cleanup_old_excursions();
 
-INSERT INTO excursions (topic, guide_id, description, date, start_time, duration_minutes, max_participants)
+INSERT INTO excursions (topic, guide_id, description, date, start_time, duration_minutes, max_participants, booked_count)
 VALUES
-    ('Safari Tour', 4, 'Explore the African Savannah zone', CURRENT_DATE + INTERVAL '5 days', '10:00', 90, 20),
-    ('Reptile Walkthrough', 4, 'Learn about lizards and snakes', CURRENT_DATE + INTERVAL '3 days', '13:30', 60, 15),
-    ('Bird Watching', 4, 'Observe exotic birds and their habits', CURRENT_DATE + INTERVAL '1 day', '09:00', 45, 10);
+    ('Safari Tour', 4, 'Explore the African Savannah zone', CURRENT_DATE + INTERVAL '5 days', '10:00', 90, 20, 2),
+    ('Reptile Walkthrough', 4, 'Learn about lizards and snakes', CURRENT_DATE + INTERVAL '3 days', '13:30', 60, 15, 0),
+    ('Bird Watching', 4, 'Observe exotic birds and their habits', CURRENT_DATE + INTERVAL '1 day', '09:00', 45, 10, 0);
