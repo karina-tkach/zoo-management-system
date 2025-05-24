@@ -41,20 +41,28 @@ export default function TicketFormModal({ visitType, excursion, onClose }) {
 
     const onSubmit = async (data) => {
         try {
-            const res = await fetch("/api/tickets", {
+            const response = await fetch("/api/tickets/buy-ticket", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify(data),
             });
+            console.log(response.status);
 
-            if (res.status === 201) {
-                alert("Ticket created successfully");
-                onClose?.();
-            } else {
-                const err = await res.json();
-                alert(err.message || "Failed to create ticket");
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log(errorData);
+                throw new Error(errorData.message || "Failed to create ticket.");
             }
+            const data1 = await response.json();
+            const { checkoutLink } = data1;
+            console.log(checkoutLink.toString());
+
+            if (!checkoutLink || typeof checkoutLink !== "string") {
+                throw new Error("Invalid or missing checkout link from server.");
+            }
+
+            window.location.href = checkoutLink;
         } catch (err) {
             alert("Something went wrong");
         }

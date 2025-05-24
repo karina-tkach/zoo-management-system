@@ -20,6 +20,8 @@ import TicketAddForm from "./pages/TicketAddForm"
 import NotFound from './pages/NotFound';
 import ErrorPage from './pages/ErrorPage';
 import TicketFormModal from "./components/TicketFormModal.jsx";
+import CancelPage from "./pages/CancelPage"
+import SuccessPage from "./pages/SuccessPage"
 
 
 const App = () => {
@@ -49,6 +51,9 @@ const App = () => {
                 <Route path="/tickets/:id" element={<Ticket/>} />
                 <Route path="/tickets/add" element={<TicketAddForm/>} />
                 <Route path="/buy-ticket" element={<TicketFormModal visitType={"GENERAL"}/>} />
+                <Route path="/cancel" element={<CancelPage/>} />
+                <Route path="/success" element={<SuccessPage/>} />
+
                 <Route path="*" element={<NotFound/>} />
                 <Route path="/error" element={<ErrorPage />} />
             </Routes>

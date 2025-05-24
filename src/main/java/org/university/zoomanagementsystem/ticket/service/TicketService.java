@@ -74,7 +74,7 @@ public class TicketService {
         }
     }
 
-    /*public Ticket addTicketOnline(Ticket ticket) throws MessagingException, UnsupportedEncodingException {
+    public Ticket addTicketOnline(Ticket ticket) throws MessagingException, UnsupportedEncodingException {
         try {
             logger.info("Try to add ticket online");
             ticket.setUuid(UUID.randomUUID());
@@ -82,7 +82,14 @@ public class TicketService {
             ticketValidator.validate(ticket);
 
             int pricingId = ticketPricingService.getTicketPricingByTicketAndVisitType(ticket.getTicketType(), ticket.getVisitType()).getId();
-
+            if (ticket.getExcursionId() != null) {
+                Excursion excursion = excursionService.getExcursionById(ticket.getExcursionId());
+                if (excursion.getBookedCount() == excursion.getMaxParticipants()) {
+                    throw new TicketValidationException("Excursion already booked");
+                }
+                excursion.setBookedCount(excursion.getBookedCount() + 1);
+                excursionService.updateExcursionById(excursion, excursion.getId());
+            }
             int id = ticketRepository.addTicket(ticket, pricingId);
             if (id == -1) {
                 throw new TicketValidationException("Unable to retrieve the generated key");
@@ -100,7 +107,11 @@ public class TicketService {
             logger.warn("Ticket wasn't added: {}\n{}", ticket, exception.getMessage());
             throw exception;
         }
-    }*/
+    }
+
+    public void validateTicketToBuy(Ticket ticket) {
+
+    }
 
     public Ticket getTicketById(int id) {
         try {

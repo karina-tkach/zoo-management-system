@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/excursions").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/excursions/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ticket-pricings/by-type").permitAll()
+                        .requestMatchers("/api/stripe/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
