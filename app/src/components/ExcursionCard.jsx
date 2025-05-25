@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 export default function ExcursionCard({ excursion, onBook }) {
     const { user } = useAuth();
     const isLoggedIn = user && user.username !== null;
+    const available = excursion.maxParticipants - excursion.bookedCount;
 
     return (
         <div className="bg-white border border-gray-300 shadow-lg rounded-md p-6 font-mono h-full">
@@ -32,10 +33,11 @@ export default function ExcursionCard({ excursion, onBook }) {
                 <div>
                     <div className="border-t border-gray-400 pt-3 text-right text-lg font-bold">
                         Available:{" "}
-                        {excursion.maxParticipants - excursion.bookedCount}
+                        {available}
                     </div>
 
                     {isLoggedIn ? (
+                        available > 0 ? (
                         <div className="mt-4 flex justify-center">
                             <button
                                 onClick={() => onBook(excursion)}
@@ -43,7 +45,12 @@ export default function ExcursionCard({ excursion, onBook }) {
                             >
                                 Book Now
                             </button>
-                        </div>
+                        </div>) :
+                            (
+                                <p className="pt-2 text-center text-red-600 text-sm space-y-2 italic">
+                                    This excursion is currently not available for booking.
+                                </p>
+                            )
                     ) :
                     <p className="pt-2 text-center text-red-600 text-sm space-y-2 italic">Log in to book this excursion</p>}
                 </div>

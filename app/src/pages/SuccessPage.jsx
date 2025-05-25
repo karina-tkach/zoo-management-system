@@ -6,6 +6,7 @@ import {
     CreditCard,
     User,
     Ticket,
+    LucideMail
 } from 'lucide-react';
 
 const SuccessPage = () => {
@@ -55,35 +56,43 @@ const SuccessPage = () => {
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
-            <div className="bg-white p-6 md:p-10 rounded-2xl shadow-xl max-w-md w-full border border-muted">
+            <div className="bg-white p-6 rounded-2xl shadow-xl max-w-md w-full border border-muted">
                 <div className="flex items-center justify-center mb-4 text-green-600">
                     <CheckCircle className="w-10 h-10" />
                 </div>
                 <h1 className="text-2xl font-bold text-center mb-2">Payment Successful</h1>
-                <p className="text-muted-foreground text-center mb-6">Thank you for your visit to the zoo!</p>
+                <p className="text-muted-foreground text-center mb-6">Thank you for your visit to the zoo! <br/>You will receive a ticket to the provided email.</p>
 
-                <div className="space-y-3 text-sm text-gray-700">
+                <div className="space-y-3 text-lg text-gray-700">
                     <div className="flex items-center gap-2">
-                        <User className="text-blue-600 w-4 h-4" />
+                        <User className="text-blue-600 w-5 h-5"/>
                         <span><strong>Name:</strong> {metadata.fullName}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Ticket className="text-violet-600 w-4 h-4" />
+                        <LucideMail className="text-blue-600 w-5 h-5"/>
+                        <span><strong>Email:</strong> {metadata.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Ticket className="text-violet-600 w-5 h-5"/>
                         <span><strong>Ticket Type:</strong> {metadata.ticketType}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Calendar className="text-green-600 w-4 h-4" />
+                        <Ticket className="text-violet-600 w-5 h-5"/>
+                        <span><strong>Visit Type:</strong> {metadata.visitType}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Calendar className="text-green-600 w-5 h-5"/>
                         <span><strong>Visit Date:</strong> {metadata.visitDate}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <CreditCard className="text-yellow-600 w-4 h-4" />
-                        <span><strong>Paid:</strong> ${(amount_total / 100).toFixed(2)}</span>
+                        <CreditCard className="text-yellow-600 w-5 h-5"/>
+                        <span><strong>Paid:</strong> ₴{(amount_total / 100).toFixed(2)}</span>
                     </div>
                 </div>
 
                 <Link
                     to="/"
-                    className="mt-6 inline-flex items-center justify-center gap-2 bg-primary text-white px-4 py-2 rounded-xl hover:bg-primary/90 transition-colors w-full"
+                    className="mt-6 inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-600/90 transition-colors w-full"
                 >
                     Back to Home
                 </Link>

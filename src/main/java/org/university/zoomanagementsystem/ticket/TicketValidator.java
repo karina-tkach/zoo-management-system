@@ -23,6 +23,16 @@ public class TicketValidator {
         validateEmail(ticket.getPurchaseMethod(), ticket.getEmail());
     }
 
+    public void validateForOnlineBuy(Ticket ticket) {
+        validateTicketNotNull(ticket);
+        validateName(ticket.getFullName());
+        validateTicketType(ticket.getTicketType());
+        validateVisitType(ticket.getVisitType());
+        validateDate(ticket.getVisitDate());
+        validateExcursionId(ticket.getVisitType(), ticket.getExcursionId());
+        validateEmail("ONLINE", ticket.getEmail());
+    }
+
     private void validateTicketNotNull(Ticket ticket) {
         if (ticket == null) {
             throw new TicketValidationException("Ticket was null");
@@ -78,6 +88,9 @@ public class TicketValidator {
     private void validateExcursionId(String visitType, Integer excursionId) {
         if (visitType.equals("EXCURSION") && excursionId == null) {
             throw new TicketValidationException("Excursion id was null");
+        }
+        else if (!visitType.equals("EXCURSION") && excursionId != null) {
+            throw new TicketValidationException("Excursion id must be null");
         }
     }
 

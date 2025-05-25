@@ -33,11 +33,11 @@ public class StripeService {
                                 .setQuantity(1L)
                                 .setPriceData(
                                         SessionCreateParams.LineItem.PriceData.builder()
-                                                .setCurrency("usd")
+                                                .setCurrency("uah")
                                                 .setUnitAmount(checkoutRequest.getAmount() * 100L)
                                                 .setProductData(
                                                         SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                                .setName("Zoo ticket")
+                                                                .setName("Zoo ticket " + visitType)
                                                                 .build())
                                                 .build())
                                 .build())

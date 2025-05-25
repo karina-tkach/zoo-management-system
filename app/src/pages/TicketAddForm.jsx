@@ -43,26 +43,73 @@ export default function TicketAddForm() {
     }, [user, loading, navigate]);
 
     useEffect(() => {
-        if (ticketType && visitType && !(ticketType.length === 0) && !(visitType.length === 0) ) {
-            fetch(`/api/ticket-pricings/by-type?ticketType=${ticketType}&visitType=${visitType}`, {
-                credentials: 'include'
-            })
-                .then(res => res.json())
-                .then(data => setPrice(data.price))
-                .catch(() => setPrice(null));
-        }
-    }, [ticketType, visitType]);
+        const fetchPrice = async () => {
+            if (ticketType && visitType && ticketType.length > 0 && visitType.length > 0) {
+                try {
+                    const response = await fetch(`/api/ticket-pricings/by-type?ticketType=${ticketType}&visitType=${visitType}`, {
+                        credentials: 'include'
+                    });
+
+                    if (response.status === 200) {
+                        const data = await response.json();
+                        setPrice(data.price);
+                    } else {
+                        const resData = await response.json();
+                        navigate('/error', {
+                            state: {
+                                message: resData.message || 'Failed to fetch ticket price',
+                                code: response.status
+                            }
+                        });
+                    }
+                } catch (error) {
+                    navigate('/error', {
+                        state: {
+                            message: 'An unexpected error occurred',
+                            code: 500
+                        }
+                    });
+                }
+            }
+        };
+
+        fetchPrice();
+    }, [ticketType, visitType, navigate]);
 
     useEffect(() => {
-        if (visitType === 'EXCURSION') {
-            fetch('/api/excursions/available', {
-                credentials: 'include'
-            })
-                .then(res => res.json())
-                .then(data => setExcursions(data))
-                .catch(() => setExcursions([]));
-        }
-    }, [visitType]);
+        const fetchExcursions = async () => {
+            if (visitType === 'EXCURSION') {
+                try {
+                    const response = await fetch('/api/excursions/available', {
+                        credentials: 'include'
+                    });
+
+                    if (response.status === 200) {
+                        const data = await response.json();
+                        setExcursions(data);
+                    } else {
+                        const resData = await response.json();
+                        navigate('/error', {
+                            state: {
+                                message: resData.message || 'Failed to fetch available excursions',
+                                code: response.status
+                            }
+                        });
+                    }
+                } catch (error) {
+                    navigate('/error', {
+                        state: {
+                            message: 'An unexpected error occurred',
+                            code: 500
+                        }
+                    });
+                }
+            }
+        };
+
+        fetchExcursions();
+    }, [visitType, navigate]);
+
 
     useEffect(() => {
         const selected = excursions.find(e => e.id === parseInt(excursionId));
@@ -156,7 +203,7 @@ export default function TicketAddForm() {
                     <div>
                         <label className="block text-sm font-medium mb-1">Excursion</label>
                         <select className="w-full border border-gray-300 rounded-lg px-3 py-2" {...register('excursionId', { required: true })}>
-                            <option value="">Select excursion</option>
+                            <option value="" disabled={true}>Select excursion</option>
                             {excursions.map(e => (
                                 <option key={e.id} value={e.id}>{`${e.topic} | ${e.date} | ${e.startTime} | Available: ${e.maxParticipants-e.bookedCount}`}</option>
                             ))}

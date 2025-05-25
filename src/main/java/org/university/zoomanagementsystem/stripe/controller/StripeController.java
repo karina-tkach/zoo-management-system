@@ -1,8 +1,12 @@
 package org.university.zoomanagementsystem.stripe.controller;
 
+import com.stripe.Stripe;
+import com.stripe.exception.EventDataObjectDeserializationException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
+import com.stripe.model.EventDataObjectDeserializer;
+import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import jakarta.mail.MessagingException;
@@ -38,7 +42,7 @@ public class StripeController {
     public ResponseEntity<?> handleStripeWebhook(
             @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader
-    ) throws MessagingException, UnsupportedEncodingException {
+    ) throws MessagingException, UnsupportedEncodingException, EventDataObjectDeserializationException {
         String endpointSecret = stripeWebHookKey;
         Event event;
 
@@ -49,15 +53,16 @@ public class StripeController {
         }
 
         if ("checkout.session.completed".equals(event.getType())) {
-            Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
-
+            Session session = (Session) event.getDataObjectDeserializer().deserializeUnsafe();
             if (session != null) {
                 String fullName = session.getMetadata().get("fullName");
                 String email = session.getMetadata().get("email");
                 String ticketType = session.getMetadata().get("ticketType");
                 String visitType = session.getMetadata().get("visitType");
                 LocalDate visitDate = LocalDate.parse(session.getMetadata().get("visitDate"));
-                Integer excursionId = Integer.valueOf(session.getMetadata().get("excursionId"));
+                String excursionIdStr = session.getMetadata().get("excursionId");
+                Integer excursionId = (excursionIdStr == null || excursionIdStr.isEmpty()
+                || "null".equalsIgnoreCase(excursionIdStr)) ? null : Integer.valueOf(excursionIdStr);
                 int price = (int) (session.getAmountTotal() / 100);
 
                 Ticket ticket = new Ticket();

@@ -14,6 +14,7 @@ import org.university.zoomanagementsystem.excursion.Excursion;
 import org.university.zoomanagementsystem.excursion.service.ExcursionService;
 import org.university.zoomanagementsystem.mail.MailSenderService;
 import org.university.zoomanagementsystem.ticket.Ticket;
+import org.university.zoomanagementsystem.ticket.TicketPricing;
 import org.university.zoomanagementsystem.ticket.TicketValidator;
 import org.university.zoomanagementsystem.ticket.repository.TicketRepository;
 
@@ -102,7 +103,8 @@ public class TicketService {
 
             logger.info("Ticket was added:\n{}", ticket);
             return addedTicket;
-        } catch (TicketValidationException | TicketNotFoundException | DataAccessException | MessagingException |
+        } catch (TicketPricingValidationException | TicketPricingNotFoundException | ExcursionNotFoundException |
+                 TicketValidationException | TicketNotFoundException | DataAccessException | MessagingException |
                  UnsupportedEncodingException exception) {
             logger.warn("Ticket wasn't added: {}\n{}", ticket, exception.getMessage());
             throw exception;
@@ -110,7 +112,31 @@ public class TicketService {
     }
 
     public void validateTicketToBuy(Ticket ticket) {
+        try {
+            logger.info("Try to validate ticket to buy");
+            ticketValidator.validateForOnlineBuy(ticket);
 
+            TicketPricing ticketPricing = ticketPricingService.getTicketPricingByTicketAndVisitType(ticket.getTicketType(), ticket.getVisitType());
+            if (ticketPricing.getPrice() != ticket.getPrice()) {
+                throw new TicketValidationException("Price was wrong");
+            }
+
+            if (ticket.getExcursionId() != null) {
+                Excursion excursion = excursionService.getExcursionById(ticket.getExcursionId());
+                if (excursion.getBookedCount() == excursion.getMaxParticipants()) {
+                    throw new TicketValidationException("Excursion already booked");
+                }
+                if (!ticket.getVisitDate().equals(excursion.getDate())) {
+                    throw new TicketValidationException("Date for excursion was invalid");
+                }
+
+            }
+            logger.info("Ticket was validated:\n{}", ticket);
+        } catch (TicketPricingValidationException | TicketPricingNotFoundException | ExcursionNotFoundException |
+                 TicketValidationException | TicketNotFoundException | DataAccessException exception) {
+            logger.warn("Ticket wasn't validated: {}\n{}", ticket, exception.getMessage());
+            throw exception;
+        }
     }
 
     public Ticket getTicketById(int id) {

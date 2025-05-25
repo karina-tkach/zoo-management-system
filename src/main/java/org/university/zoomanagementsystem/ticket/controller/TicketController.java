@@ -1,6 +1,7 @@
 package org.university.zoomanagementsystem.ticket.controller;
 
 import com.stripe.exception.StripeException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +19,9 @@ import java.util.List;
 public class TicketController {
     private final TicketService ticketService;
     private final StripeService stripeService;
+
+    @Value("${frontend.host}")
+    private String frontendHost;
 
     public TicketController(TicketService ticketService, StripeService stripeService) {
         this.ticketService = ticketService;
@@ -46,12 +50,12 @@ public class TicketController {
 
     @PostMapping("/buy-ticket")
     public ResponseEntity<?> buyTicketOnline(@RequestBody Ticket ticket) throws StripeException {
-        //validation here
+        ticketService.validateTicketToBuy(ticket);
         // Create Stripe Checkout session
         CheckoutRequest checkoutRequest = new CheckoutRequest();
         checkoutRequest.setAmount((long) ticket.getPrice()); // Stripe expects amounts in cents
-        checkoutRequest.setSuccessUrl("http://localhost:5173/success"); // Frontend success URL
-        checkoutRequest.setCancelUrl("http://localhost:5173/cancel");   // Frontend cancel URL
+        checkoutRequest.setSuccessUrl(frontendHost + "/success"); // Frontend success URL
+        checkoutRequest.setCancelUrl(frontendHost + "/cancel");   // Frontend cancel URL
 
         CheckoutResponse checkoutResponse = stripeService.createCheckoutSession(ticket.getFullName(), ticket.getEmail(), ticket.getTicketType(),
                 ticket.getVisitType(), ticket.getVisitDate(), ticket.getExcursionId(), checkoutRequest);

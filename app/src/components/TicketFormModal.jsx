@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 
 export default function TicketFormModal({ visitType, excursion, onClose }) {
     const { user, loading } = useAuth();
+    const navigate = useNavigate();
+    const [serverError, setServerError] = useState('');
     const isLoggedIn = user && user.username !== null;
+    const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
     const {
         register,
         handleSubmit,
@@ -17,18 +21,40 @@ export default function TicketFormModal({ visitType, excursion, onClose }) {
     const ticketType = watch("ticketType");
 
     useEffect(() => {
-        if (ticketType && visitType) {
-            fetch(`/api/ticket-pricings/by-type?ticketType=${ticketType}&visitType=${visitType}`, {
-                credentials: "include",
-            })
-                .then(res => res.json())
-                .then(data => {
-                    setPrice(data.price);
-                    setValue("price", data.price);
-                })
-                .catch(() => setPrice(null));
-        }
-    }, [ticketType, visitType, setValue]);
+        const fetchPrice = async () => {
+            if (ticketType && visitType) {
+                try {
+                    const response = await fetch(`/api/ticket-pricings/by-type?ticketType=${ticketType}&visitType=${visitType}`, {
+                        credentials: "include",
+                    });
+
+                    if (response.status === 200) {
+                        const data = await response.json();
+                        setPrice(data.price);
+                        setValue("price", data.price);
+                    } else {
+                        const resData = await response.json();
+                        navigate('/error', {
+                            state: {
+                                message: resData.message || 'Failed to fetch ticket price',
+                                code: response.status
+                            }
+                        });
+                    }
+                } catch (error) {
+                    navigate('/error', {
+                        state: {
+                            message: 'An unexpected error occurred while fetching ticket price',
+                            code: 500
+                        }
+                    });
+                }
+            }
+        };
+
+        fetchPrice();
+    }, [ticketType, visitType, setValue, navigate]);
+
 
     useEffect(() => {
         setValue("visitType", visitType);
@@ -41,34 +67,51 @@ export default function TicketFormModal({ visitType, excursion, onClose }) {
 
     const onSubmit = async (data) => {
         try {
+            setIsCheckoutLoading(true);
             const response = await fetch("/api/tickets/buy-ticket", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify(data),
             });
-            console.log(response.status);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.log(errorData);
-                throw new Error(errorData.message || "Failed to create ticket.");
+            if (response.status === 400 || response.status === 404) {
+                const resData = await response.json();
+                setServerError(resData.message || 'Invalid input.');
+                setIsCheckoutLoading(false);
+                return;
+            } else if (response.status !== 200) {
+                const resData = await response.json();
+                navigate('/error', {
+                    state: {
+                        message: resData.message || "Something went wrong",
+                        code: response.status
+                    }
+                });
             }
+
             const data1 = await response.json();
             const { checkoutLink } = data1;
-            console.log(checkoutLink.toString());
 
             if (!checkoutLink || typeof checkoutLink !== "string") {
                 throw new Error("Invalid or missing checkout link from server.");
             }
 
             window.location.href = checkoutLink;
-        } catch (err) {
-            alert("Something went wrong");
+        } catch (error) {
+            navigate('/error', {
+                state: {
+                    message: "Something went wrong",
+                    code: 500
+                }
+            });
+        }
+        finally {
+            setIsCheckoutLoading(false);
         }
     };
 
-    if (loading) {
+    if (loading || isCheckoutLoading) {
         return (
             <div className="relative p-6 min-h-screen bg-gray-200">
                 <div className="absolute inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center z-50">
@@ -101,6 +144,12 @@ export default function TicketFormModal({ visitType, excursion, onClose }) {
                         ? `Book Ticket for Excursion #${excursion.id}`
                         : "Book General Admission Ticket"}
                 </h2>
+
+                {serverError && (
+                    <div className="mb-4 text-red-700 bg-red-100 border border-red-300 rounded p-3 text-sm">
+                        {serverError}
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
@@ -136,7 +185,7 @@ export default function TicketFormModal({ visitType, excursion, onClose }) {
                             className="w-full border rounded px-3 py-2"
                             {...register("ticketType", { required: true })}
                         >
-                            <option disabled value="">
+                            <option disabled={true} value="">
                                 Select type
                             </option>
                             <option value="ADULT">ADULT</option>
