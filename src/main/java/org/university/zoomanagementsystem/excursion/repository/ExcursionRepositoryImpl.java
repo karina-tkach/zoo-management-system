@@ -49,6 +49,29 @@ public class ExcursionRepositoryImpl implements ExcursionRepository {
     }
 
     @Override
+    public boolean guideHasConflict(Excursion excursion) {
+        String query = """
+        SELECT COUNT(*) FROM excursions
+        WHERE guide_id = :guide_id
+        AND date = :date
+        AND (
+            (start_time, start_time + INTERVAL '1 minute' * duration_minutes) OVERLAPS 
+            (:start_time::time, (:start_time::time + (:duration_minutes || ' minutes')::interval))
+        )
+        """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("guide_id", excursion.getGuide().getId())
+                .addValue("date", Date.valueOf(excursion.getDate()))
+                .addValue("start_time", Time.valueOf(excursion.getStartTime()))
+                .addValue("duration_minutes", excursion.getDurationMinutes());
+
+        Integer count = jdbcTemplate.queryForObject(query, parameters, Integer.class);
+        return count != null && count > 0;
+    }
+
+
+    @Override
     public Excursion getExcursionById(int id) {
         String query = """
             SELECT excursions.id, excursions.topic, excursions.guide_id, excursions.description, 

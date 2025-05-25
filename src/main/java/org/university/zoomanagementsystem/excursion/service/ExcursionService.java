@@ -31,6 +31,10 @@ public class ExcursionService {
 
             excursionValidator.validate(excursion);
 
+            if (excursionRepository.guideHasConflict(excursion)) {
+                throw new ExcursionValidationException("This guide is already scheduled for an excursion during the specified time.");
+            }
+
             int id = excursionRepository.addExcursion(excursion);
             if (id == -1) {
                 throw new ExcursionValidationException("Unable to retrieve the generated key");

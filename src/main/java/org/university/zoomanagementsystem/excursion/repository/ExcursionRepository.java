@@ -7,6 +7,8 @@ import java.util.List;
 public interface ExcursionRepository {
     int addExcursion(Excursion excursion);
 
+    boolean guideHasConflict(Excursion excursion);
+
     Excursion getExcursionById(int id);
 
     void updateExcursionById(Excursion excursion, int id);
