@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../context/AuthContext';
 import Pagination from "../components/Pagination";
 
 export default function StaffPage() {
@@ -10,18 +9,7 @@ export default function StaffPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
-    const { user, loading } = useAuth();
 
-    useEffect(() => {
-        if (!loading && !user?.roles.includes("ADMIN")) {
-            navigate("/error", {
-                state: {
-                    message: "Access Denied: Admins only",
-                    code: 403,
-                },
-            });
-        }
-    }, [user, loading, navigate]);
 
     useEffect(() => {
         const fetchStaff = async () => {
@@ -71,19 +59,6 @@ export default function StaffPage() {
             }
         }
     };
-
-    if (loading)
-        return (
-            <div className="relative p-6 min-h-screen bg-gray-200">
-
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center z-50">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid mx-auto mb-4" />
-                        <p className="text-xl font-semibold text-gray-700">Loading...</p>
-                    </div>
-                </div>
-            </div>
-        );
 
     return (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">

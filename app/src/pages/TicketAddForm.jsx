@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import {useAuth} from "../context/AuthContext.jsx";
 
 export default function TicketAddForm() {
     const navigate = useNavigate();
@@ -9,7 +8,6 @@ export default function TicketAddForm() {
     const [price, setPrice] = useState(null);
     const [excursions, setExcursions] = useState([]);
     const [selectedExcursion, setSelectedExcursion] = useState(null);
-    const {user, loading} = useAuth();
 
     const {
         register,
@@ -31,16 +29,6 @@ export default function TicketAddForm() {
     const visitType = watch('visitType');
     const excursionId = watch('excursionId');
 
-    useEffect(() => {
-        if (!loading && !user?.roles.includes("TICKET_AGENT")) {
-            navigate("/error", {
-                state: {
-                    message: "Access Denied: Ticket agents only",
-                    code: 403,
-                },
-            });
-        }
-    }, [user, loading, navigate]);
 
     useEffect(() => {
         const fetchPrice = async () => {

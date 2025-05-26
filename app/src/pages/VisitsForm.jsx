@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import {useAuth} from "../context/AuthContext.jsx";
 
 export default function VisitsForm() {
     const navigate = useNavigate();
     const [serverError, setServerError] = useState('');
     const [gates, setGates] = useState([]);
-    const {user, loading} = useAuth();
 
     const {
         register,
         handleSubmit,
-        setValue,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -22,17 +19,6 @@ export default function VisitsForm() {
         },
     });
 
-
-    useEffect(() => {
-        if (!loading && !user?.roles.includes("TICKET_AGENT")) {
-            navigate("/error", {
-                state: {
-                    message: "Access Denied: Ticket agents only",
-                    code: 403,
-                },
-            });
-        }
-    }, [user, loading, navigate]);
 
 
     useEffect(() => {

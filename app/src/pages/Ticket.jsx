@@ -1,24 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import {useAuth} from "../context/AuthContext.jsx";
 
 export default function Ticket() {
     const [ticket, setTicket] = useState([]);
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user, loading } = useAuth();
 
-    useEffect(() => {
-        if (!loading && !user?.roles.includes("TICKET_AGENT")) {
-            navigate("/error", {
-                state: {
-                    message: "Access Denied: Ticket agents only",
-                    code: 403,
-                },
-            });
-        }
-    }, [user, loading, navigate]);
 
     useEffect(() => {
         const fetchTicket = async () => {
@@ -52,18 +40,6 @@ export default function Ticket() {
         fetchTicket();
     }, []);
 
-    if (loading) {
-        return (
-            <div className="relative p-6 min-h-screen bg-green-50">
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center z-50">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600 border-solid mx-auto mb-4" />
-                        <p className="text-2xl font-semibold text-green-700">Loading...</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="min-h-screen bg-gray-100 py-5 px-4 flex justify-center">

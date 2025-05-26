@@ -1,14 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../context/AuthContext';
 
 export default function StaffForm() {
     const { id } = useParams();
     const isEdit = Boolean(id);
     const navigate = useNavigate();
     const [serverError, setServerError] = useState('');
-    const { user, loading } = useAuth();
 
     const {
         register,
@@ -28,16 +26,6 @@ export default function StaffForm() {
         }
     });
 
-    useEffect(() => {
-        if (!loading && !user?.roles.includes("ADMIN")) {
-            navigate("/error", {
-                state: {
-                    message: "Access Denied: Admins only",
-                    code: 403,
-                },
-            });
-        }
-    }, [user, loading, navigate]);
 
     useEffect(() => {
         const fetchStaff = async () => {
@@ -116,18 +104,6 @@ export default function StaffForm() {
         }
     };
 
-    if (loading)
-        return (
-            <div className="relative p-6 min-h-screen bg-gray-200">
-
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center z-50">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid mx-auto mb-4" />
-                        <p className="text-xl font-semibold text-gray-700">Loading...</p>
-                    </div>
-                </div>
-            </div>
-        );
 
     return (
         <div className="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6">

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Pagination from "../components/Pagination";
 import ExcursionCard from "../components/ExcursionCard";
-import TicketFormModal from "../components/TicketFormModal.jsx";
+import TicketFormModal from "./TicketFormModal.jsx";
 
 export default function ExcursionsView() {
     const [excursions, setExcursions] = useState([]);
@@ -12,7 +12,7 @@ export default function ExcursionsView() {
     const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
-    const { user,  loading } = useAuth();
+    const { loading } = useAuth();
     const [selectedExcursion, setSelectedExcursion] = useState(null);
 
 
