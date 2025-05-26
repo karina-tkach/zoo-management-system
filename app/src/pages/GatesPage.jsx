@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 import Pagination from "../components/Pagination";
-import SearchBar from "../components/SearchBar";
 
-export default function TicketsPage() {
-    const [tickets, setTickets] = useState([]);
+export default function GatesPage() {
+    const [gates, setGates] = useState([]);
     const [page, setPage] = useState(1);
-    const pageSize = 8;
-    const [searchQuery, setSearchQuery] = useState("");
+    const [pageSize] = useState(7);
+    const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
     const { user, loading } = useAuth();
@@ -25,23 +24,19 @@ export default function TicketsPage() {
     }, [user, loading, navigate]);
 
     useEffect(() => {
-        setPage(1);
-        setShouldScroll(false);
-    }, [searchQuery]);
-
-    useEffect(() => {
-        const fetchTickets = async () => {
+        const fetchGates = async () => {
             try {
-                const response = await fetch(`/api/tickets`, {credentials: "include"});
+                const response = await fetch(`/api/gates?page=${page}&pageSize=${pageSize}`, {credentials: "include"});
 
                 if (response.status === 200) {
-                    const tickets = await response.json();
-                    setTickets(tickets);
+                    const gates = await response.json();
+                    setGates(gates?.data);
+                    setTotalPages(gates?.totalPages);
                 } else {
                     const resData = await response.json();
                     navigate('/error', {
                         state: {
-                            message: resData.message || 'Failed to load tickets data',
+                            message: resData.message || 'Failed to load gates data',
                             code: response.status
                         }
                     });
@@ -56,26 +51,26 @@ export default function TicketsPage() {
             }
         };
 
-        fetchTickets();
-    }, []);
+        fetchGates();
+    }, [page, pageSize]);
 
-    const filter = (data, searchQuery) => {
-        return data.filter((d) =>
-            (d.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || d.uuid.toLowerCase().includes(searchQuery.toLowerCase()))
-        );
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this gate?")) {
+            try {
+                const res = await fetch(`/api/gates/${id}`, { method: "DELETE" });
+                const resData = await res.json();
+
+                if (res.ok) {
+                    setGates(gates.filter((g) => g.id !== id));
+                    alert(resData.message || "Gate deleted successfully");
+                } else {
+                    alert(resData.message || "Failed to delete gate");
+                }
+            } catch (error) {
+                alert("An error occurred while deleting gate.");
+            }
+        }
     };
-
-    const paginate = (data, currentPage, postsPerPage) => {
-        const indexOfLastPost = currentPage * postsPerPage;
-        const indexOfFirstPost = indexOfLastPost - postsPerPage;
-        return {
-            currentTickets: data.slice(indexOfFirstPost, indexOfLastPost),
-            totalPages: Math.ceil(data.length / postsPerPage),
-        };
-    };
-
-    const filteredTickets = filter(tickets, searchQuery);
-    const { currentTickets, totalPages } = paginate(filteredTickets, page, pageSize);
 
     if (loading)
         return (
@@ -93,30 +88,22 @@ export default function TicketsPage() {
     return (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800">Tickets List</h2>
+                <h2 className="text-2xl font-semibold text-gray-800">Gates List</h2>
                 <button
-                    onClick={() => navigate("/tickets/add")}
+                    onClick={() => navigate("/gates/add")}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow"
                 >
-                    Add Offline Ticket
+                    Add Gate
                 </button>
             </div>
 
-            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-
-            <div className="overflow-x-auto border border-gray-200 rounded-md shadow-sm mt-5">
+            <div className="overflow-x-auto border border-gray-200 rounded-md shadow-sm">
                 <table className="min-w-[1000px] divide-y divide-gray-200 w-full">
                     <thead className="bg-gray-50">
                     <tr className="divide-x divide-gray-200">
                         {[
-                            "Id",
-                            "UUID",
-                            "Full name",
-                            "Ticket type",
-                            "Visit type",
-                            "Price",
-                            "Visit date",
-                            "Purchase method",
+                            "Gate name",
+                            "Gate location",
                             "Actions",
                         ].map((header) => (
                             <th
@@ -129,48 +116,37 @@ export default function TicketsPage() {
                     </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                    {currentTickets.length === 0 ? (
+                    {gates.length === 0 ? (
                         <tr>
                             <td
-                                colSpan={9}
+                                colSpan={3}
                                 className="text-center py-4 text-gray-500 italic"
                             >
-                                No tickets found
+                                No gates found
                             </td>
                         </tr>
                     ) : (
-                        currentTickets.map((s) => (
+                        gates.map((s) => (
                             <tr key={s.id} className="hover:bg-gray-50 divide-x divide-gray-200">
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-900">
-                                    {s.id}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-900">
-                                    {s.uuid}
+                                    {s.name}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.fullName}
+                                    {s.location}
                                 </td>
-                                <td className="px-4 py-3 whitespace-normal break-words text-gray-700">
-                                    {s.ticketType}
-                                </td>
-                                <td className="px-4 py-3 whitespace-normal break-words text-gray-700">
-                                    {s.visitType}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.price}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.visitDate}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.purchaseMethod}
-                                </td>
+
                                 <td className="px-4 py-3 whitespace-nowrap space-x-2">
                                     <button
-                                        onClick={() => navigate(`/tickets/${s.id}`)}
+                                        onClick={() => navigate(`/gates/edit/${s.id}`)}
                                         className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
                                     >
-                                        View Details
+                                        Update
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(s.id)}
+                                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
+                                    >
+                                        Delete
                                     </button>
                                 </td>
                             </tr>

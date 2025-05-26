@@ -60,7 +60,7 @@ export default function ExcursionForm() {
                     const resData = await response.json();
                     navigate('/error', {
                         state: {
-                            message: resData.message || 'Failed to load staff data',
+                            message: resData.message || 'Failed to load excursion data',
                             code: response.status
                         }
                     });

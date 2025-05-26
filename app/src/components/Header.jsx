@@ -1,5 +1,5 @@
 import { Home, PawPrint, Info, LogIn, LogOut, UserPlus, Users, Map, PartyPopper, Currency,
-Ticket} from "lucide-react";
+Ticket, Store, ScrollText} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {useEffect} from "react";
@@ -77,10 +77,14 @@ export default function Header() {
                                 <Ticket className="w-5 h-5" />
                                 Tickets
                             </Link>
-                            {/*<Link to="/visits" className="flex items-center gap-1 hover:text-green-200 transition">
-                                <PartyPopper className="w-5 h-5" />
-                                Visits
-                            </Link>*/}
+                            <Link to="/gates" className="flex items-center gap-1 hover:text-green-200 transition">
+                                <Store className="w-5 h-5" />
+                                Gates
+                            </Link>
+                            <Link to="/visits" className="flex items-center gap-1 hover:text-green-200 transition">
+                                <ScrollText className="w-5 h-5" />
+                                Visit logs
+                            </Link>
                         </>
                     )}
                     {(!isLoggedIn || isVisitor) && (

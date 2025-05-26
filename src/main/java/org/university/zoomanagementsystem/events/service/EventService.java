@@ -84,7 +84,7 @@ public class EventService {
 
     public boolean deleteEventById(int id) {
         try {
-            Event event = eventRepository.getEventById(id);
+            Event event = getEventById(id);
             logger.info("Try to delete event by id");
             eventRepository.deleteEventById(id);
             logger.info("Event was deleted:\n{}", event);

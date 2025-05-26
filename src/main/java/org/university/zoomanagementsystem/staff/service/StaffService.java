@@ -115,11 +115,14 @@ public class StaffService {
     public boolean deleteStaffById(int id) {
         try {
             Staff staff = staffRepository.getStaffById(id);
+            if(staff == null) {
+                throw new StaffNotFoundException("Staff with such id was not found");
+            }
             logger.info("Try to delete staff by id");
             userService.deleteUserById(staff.getUserId());
             logger.info("Staff was deleted:\n{}", staff);
             return true;
-        } catch (StaffValidationException | UserValidationException | DataAccessException exception) {
+        } catch (StaffValidationException | StaffNotFoundException | UserValidationException | DataAccessException exception) {
             logger.warn("Staff wasn't deleted: {}\n{}", id, exception.getMessage());
             throw exception;
         }

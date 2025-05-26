@@ -82,7 +82,7 @@ public class ExcursionService {
 
     public boolean deleteExcursionById(int id) {
         try {
-            Excursion excursion = excursionRepository.getExcursionById(id);
+            Excursion excursion = getExcursionById(id);
             logger.info("Try to delete excursion by id");
             excursionRepository.deleteExcursionById(id);
             logger.info("Excursion was deleted:\n{}", excursion);
