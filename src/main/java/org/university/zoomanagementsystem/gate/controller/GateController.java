@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@PreAuthorize("hasAuthority('TICKET_AGENT')")
 @RequestMapping("/api/gates")
 public class GateController {
     private final GateService gateService;
@@ -23,7 +24,7 @@ public class GateController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllGates(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int pageSize) {
+            @RequestParam(defaultValue = "100") int pageSize) {
 
         List<Gate> gatesList = gateService.getGatesWithPagination(page, pageSize);
         int rows = gateService.getGatesRowsCount();
@@ -37,28 +38,24 @@ public class GateController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAuthority('TICKET_AGENT')")
     @PostMapping
     public ResponseEntity<Gate> addGate(@RequestBody Gate gate) {
         Gate createdGate = gateService.addGate(gate);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdGate);
     }
 
-    @PreAuthorize("hasAuthority('TICKET_AGENT')")
     @PatchMapping("/{id}")
     public ResponseEntity<Gate> updateGate(@PathVariable int id, @RequestBody Gate gate) {
         Gate updatedGate = gateService.updateGateById(gate, id);
         return ResponseEntity.ok(updatedGate);
     }
 
-    @PreAuthorize("hasAuthority('TICKET_AGENT')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteGate(@PathVariable int id) {
         gateService.deleteGateById(id);
         return ResponseEntity.ok(Map.of("message", String.format("Gate with id %d was successfully deleted", id)));
     }
 
-    @PreAuthorize("hasAuthority('TICKET_AGENT')")
     @GetMapping("/{id}")
     public ResponseEntity<Gate> getGateById(@PathVariable int id) {
         Gate gate = gateService.getGateById(id);

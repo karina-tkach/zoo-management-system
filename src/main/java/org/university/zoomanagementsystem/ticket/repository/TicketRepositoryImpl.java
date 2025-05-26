@@ -74,7 +74,7 @@ public class TicketRepositoryImpl implements TicketRepository {
             FROM tickets t
             LEFT JOIN excursions e ON t.excursion_id = e.id
             JOIN ticket_pricings tp ON t.pricing_id = tp.id
-            ORDER BY t.id
+            ORDER BY t.visit_date DESC
             """;
 
         return jdbcTemplate.query(query, TicketMapper::mapToPojo);

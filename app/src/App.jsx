@@ -24,6 +24,8 @@ import CancelPage from "./pages/CancelPage"
 import SuccessPage from "./pages/SuccessPage"
 import GatesPage from "./pages/GatesPage.jsx";
 import GatesForm from "./pages/GatesForm.jsx";
+import VisitsPage from "./pages/VisitsPage.jsx";
+import VisitsForm from "./pages/VisitsForm.jsx";
 
 
 const App = () => {
