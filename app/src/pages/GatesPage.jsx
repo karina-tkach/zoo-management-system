@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
+import {deleteData, fetchData} from "../utils/fetch.js";
+import LoadingPage from "./LoadingPage.jsx";
+import {useLoading} from "../utils/useLoading.jsx";
 
 export default function GatesPage() {
     const [gates, setGates] = useState([]);
@@ -9,57 +12,44 @@ export default function GatesPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
+    const { loading, start, stop } = useLoading();
 
 
     useEffect(() => {
         const fetchGates = async () => {
-            try {
-                const response = await fetch(`/api/gates?page=${page}&pageSize=${pageSize}`, {credentials: "include"});
-
-                if (response.status === 200) {
-                    const gates = await response.json();
+            await fetchData({
+                url: `/api/gates?page=${page}&pageSize=${pageSize}`,
+                onSuccess: (gates) => {
                     setGates(gates?.data);
                     setTotalPages(gates?.totalPages);
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load gates data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
-                });
-            }
+                },
+                errorMessage: "Failed to load gates data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+            });
         };
 
         fetchGates();
-    }, [page, pageSize]);
+    }, [page, pageSize, navigate]);
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this gate?")) {
-            try {
-                const res = await fetch(`/api/gates/${id}`, { method: "DELETE" });
-                const resData = await res.json();
-
-                if (res.ok) {
-                    setGates(gates.filter((g) => g.id !== id));
-                    alert(resData.message || "Gate deleted successfully");
-                } else {
-                    alert(resData.message || "Failed to delete gate");
-                }
-            } catch (error) {
-                alert("An error occurred while deleting gate.");
-            }
-        }
+    const handleDelete = (id) => {
+        deleteData({
+            url: `/api/gates/${id}`,
+            confirmMessage: "Are you sure you want to delete this gate?",
+            errorMessage: "Failed to delete gate",
+            onSuccess: (resData) => {
+                setGates(gates.filter((g) => g.id !== id));
+                alert(resData.message || "Gate deleted successfully");
+            },
+            onError: (message) => alert(message),
+            navigate,
+        });
     };
 
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">

@@ -35,7 +35,7 @@ public class TicketRepositoryImpl implements TicketRepository {
                 .addValue("pricing_id", pricingId)
                 .addValue("visit_date", Date.valueOf(ticket.getVisitDate()))
                 .addValue("excursion_id", ticket.getExcursionId())
-                .addValue("purchase_method", ticket.getPurchaseMethod());
+                .addValue("purchase_method", ticket.getPurchaseMethod().getName());
 
         jdbcTemplate.update(query, mapSqlParameterSource, generatedKeyHolder);
 

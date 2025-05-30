@@ -5,7 +5,6 @@ import org.university.zoomanagementsystem.exception.validation.TicketValidationE
 import org.university.zoomanagementsystem.exception.validation.UserValidationException;
 
 import java.time.LocalDate;
-import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -30,7 +29,7 @@ public class TicketValidator {
         validateVisitType(ticket.getVisitType());
         validateDate(ticket.getVisitDate());
         validateExcursionId(ticket.getVisitType(), ticket.getExcursionId());
-        validateEmail("ONLINE", ticket.getEmail());
+        validateEmail(PurchaseMethod.ONLINE, ticket.getEmail());
     }
 
     private void validateTicketNotNull(Ticket ticket) {
@@ -58,21 +57,15 @@ public class TicketValidator {
         }
     }
 
-    private void validateTicketType(String ticketType) {
-        if (ticketType == null || ticketType.isBlank()) {
-            throw new TicketValidationException("Ticket type was null or empty");
-        }
-        if (!Set.of("ADULT", "CHILD", "PREFERENTIAL").contains(ticketType)) {
-            throw new TicketValidationException("Ticket type was invalid");
+    private void validateTicketType(TicketType ticketType) {
+        if (ticketType == null) {
+            throw new TicketValidationException("Ticket type was null");
         }
     }
 
-    private void validateVisitType(String visitType) {
-        if (visitType == null || visitType.isBlank()) {
-            throw new TicketValidationException("Visit type was null or empty");
-        }
-        if (!Set.of("GENERAL", "EXCURSION").contains(visitType)) {
-            throw new TicketValidationException("Visit type was invalid");
+    private void validateVisitType(VisitType visitType) {
+        if (visitType == null) {
+            throw new TicketValidationException("Visit type was null");
         }
     }
 
@@ -85,27 +78,24 @@ public class TicketValidator {
         }
     }
 
-    private void validateExcursionId(String visitType, Integer excursionId) {
-        if (visitType.equals("EXCURSION") && excursionId == null) {
+    private void validateExcursionId(VisitType visitType, Integer excursionId) {
+        if (visitType == VisitType.EXCURSION && excursionId == null) {
             throw new TicketValidationException("Excursion id was null");
         }
-        else if (!visitType.equals("EXCURSION") && excursionId != null) {
+        else if (visitType != VisitType.EXCURSION && excursionId != null) {
             throw new TicketValidationException("Excursion id must be null");
         }
     }
 
-    private void validatePurchaseMethod(String purchaseMethod) {
-        if (purchaseMethod == null || purchaseMethod.isBlank()) {
-            throw new TicketValidationException("Purchase method was null or empty");
-        }
-        if (!Set.of("ONLINE", "OFFLINE").contains(purchaseMethod)) {
-            throw new TicketValidationException("Purchase method was invalid");
+    private void validatePurchaseMethod(PurchaseMethod purchaseMethod) {
+        if (purchaseMethod == null) {
+            throw new TicketValidationException("Purchase method was null");
         }
     }
 
-    private void validateEmail(String purchaseMethod, String email) {
+    private void validateEmail(PurchaseMethod purchaseMethod, String email) {
         Pattern characters = Pattern.compile("^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
-        if (purchaseMethod.equals("ONLINE") && (email == null || email.isBlank() || !characters.matcher(email).find())) {
+        if (purchaseMethod == PurchaseMethod.ONLINE && (email == null || email.isBlank() || !characters.matcher(email).find())) {
             throw new UserValidationException("User email was null/empty or had invalid characters");
         }
     }

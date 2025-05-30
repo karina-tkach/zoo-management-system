@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.university.zoomanagementsystem.stripe.service.StripeService;
+import org.university.zoomanagementsystem.ticket.TicketType;
+import org.university.zoomanagementsystem.ticket.VisitType;
 import org.university.zoomanagementsystem.ticket.service.TicketService;
 import org.university.zoomanagementsystem.ticket.Ticket;
 
@@ -49,7 +51,7 @@ public class StripeController {
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
         } catch (SignatureVerificationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid signature"));
         }
 
         if ("checkout.session.completed".equals(event.getType())) {
@@ -57,8 +59,8 @@ public class StripeController {
             if (session != null) {
                 String fullName = session.getMetadata().get("fullName");
                 String email = session.getMetadata().get("email");
-                String ticketType = session.getMetadata().get("ticketType");
-                String visitType = session.getMetadata().get("visitType");
+                TicketType ticketType = TicketType.valueOf(session.getMetadata().get("ticketType"));
+                VisitType visitType = VisitType.valueOf(session.getMetadata().get("visitType"));
                 LocalDate visitDate = LocalDate.parse(session.getMetadata().get("visitDate"));
                 String excursionIdStr = session.getMetadata().get("excursionId");
                 Integer excursionId = (excursionIdStr == null || excursionIdStr.isEmpty()
@@ -97,8 +99,7 @@ public class StripeController {
 
             return ResponseEntity.ok(responseData);
         } catch (StripeException e) {
-            // Handle errors
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to retrieve session details: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Failed to retrieve session details"));
         }
     }
 }

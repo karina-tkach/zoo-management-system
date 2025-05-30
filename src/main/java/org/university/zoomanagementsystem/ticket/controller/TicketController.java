@@ -53,12 +53,12 @@ public class TicketController {
         ticketService.validateTicketToBuy(ticket);
         // Create Stripe Checkout session
         CheckoutRequest checkoutRequest = new CheckoutRequest();
-        checkoutRequest.setAmount((long) ticket.getPrice()); // Stripe expects amounts in cents
-        checkoutRequest.setSuccessUrl(frontendHost + "/success"); // Frontend success URL
-        checkoutRequest.setCancelUrl(frontendHost + "/cancel");   // Frontend cancel URL
+        checkoutRequest.setAmount((long) ticket.getPrice());
+        checkoutRequest.setSuccessUrl(frontendHost + "/success");
+        checkoutRequest.setCancelUrl(frontendHost + "/cancel");
 
-        CheckoutResponse checkoutResponse = stripeService.createCheckoutSession(ticket.getFullName(), ticket.getEmail(), ticket.getTicketType(),
-                ticket.getVisitType(), ticket.getVisitDate(), ticket.getExcursionId(), checkoutRequest);
+        CheckoutResponse checkoutResponse = stripeService.createCheckoutSession(ticket.getFullName(), ticket.getEmail(), ticket.getTicketType().getName(),
+                ticket.getVisitType().getName(), ticket.getVisitDate(), ticket.getExcursionId(), checkoutRequest);
 
         return ResponseEntity.ok(checkoutResponse);
     }

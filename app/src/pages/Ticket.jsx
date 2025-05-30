@@ -1,45 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import {fetchData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function Ticket() {
     const [ticket, setTicket] = useState([]);
     const { id } = useParams();
     const navigate = useNavigate();
+    const { loading, start, stop } = useLoading();
 
 
     useEffect(() => {
         const fetchTicket = async () => {
-            try {
-                const response = await fetch(`/api/tickets/${id}`, {
-                    credentials: "include",
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setTicket(data || []);
-                } else {
-                    const resData = await response.json();
-                    navigate("/error", {
-                        state: {
-                            message: resData.message || "Failed to load ticket data",
-                            code: response.status,
-                        },
-                    });
-                }
-            } catch {
-                navigate("/error", {
-                    state: {
-                        message: "An unexpected error occurred",
-                        code: 500,
-                    },
-                });
-            }
+            await fetchData({
+                url: `/api/tickets/${id}`,
+                onSuccess: (ticket) => setTicket(ticket || []),
+                errorMessage: "Failed to load ticket data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+            });
         };
 
         fetchTicket();
-    }, []);
+    }, [id, navigate]);
 
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="min-h-screen bg-gray-100 py-5 px-4 flex justify-center">

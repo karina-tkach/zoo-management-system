@@ -41,8 +41,8 @@ public class VisitLogService {
             logger.info("Try to add visit log");
 
             visitLogValidator.validate(visitLog);
-            Gate gate = gateService.getGateById(visitLog.getGate().getId());
-            Ticket ticket = ticketService.getTicketById(visitLog.getTicket().getId());
+            gateService.getGateById(visitLog.getGate().getId());
+            ticketService.getTicketById(visitLog.getTicket().getId());
 
             VisitLog existsVisitLog = visitLogRepository.getVisitLogByTicketId(visitLog.getTicket().getId());
             if (existsVisitLog != null) {

@@ -1,12 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import {fetchData, submitData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function GatesForm() {
     const { id } = useParams();
     const isEdit = Boolean(id);
     const navigate = useNavigate();
     const [serverError, setServerError] = useState('');
+    const { loading, start, stop } = useLoading();
 
     const {
         register,
@@ -23,32 +27,18 @@ export default function GatesForm() {
 
     useEffect(() => {
         const fetchGate = async () => {
-            try {
-                const response = await fetch(`/api/gates/${id}`, {credentials: "include"});
-
-                if (response.status === 200) {
-                    const gate = await response.json();
+            await fetchData({
+                url: `/api/gates/${id}`,
+                onSuccess: (gate) =>
                     reset({
                         name: gate.name || '',
                         location: gate.location || ''
-                    });
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load gate data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
-                });
-            }
+                    }),
+                errorMessage: "Failed to load gate data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+            });
         };
 
         if (isEdit) fetchGate();
@@ -60,38 +50,21 @@ export default function GatesForm() {
         const method = isEdit ? 'PATCH' : 'POST';
         const url = isEdit ? `/api/gates/${id}` : '/api/gates';
 
-        try {
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-                credentials: 'include'
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                alert(`Gate ${isEdit ? 'updated' : 'added'} successfully`);
-                navigate('/gates');
-            } else if (response.status === 400) {
-                const resData = await response.json();
-                setServerError(resData.message || 'Invalid input.');
-            } else {
-                const resData = await response.json();
-                navigate('/error', {
-                    state: {
-                        message: resData.message || "Something went wrong",
-                        code: response.status
-                    }
-                });
-            }
-        } catch (error) {
-            navigate('/error', {
-                state: {
-                    message: "Something went wrong",
-                    code: 500
-                }
-            });
-        }
+        await submitData({
+            url: url,
+            method: method,
+            data,
+            isJson: true,
+            entityName: "Gate",
+            navigate,
+            successPath: "/gates",
+            onValidationError: setServerError,
+        });
     };
+
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
 
     return (

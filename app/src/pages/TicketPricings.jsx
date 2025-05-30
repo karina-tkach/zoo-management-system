@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {fetchData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function TicketPricings() {
     const [pricings, setPricings] = useState([]);
@@ -7,37 +10,23 @@ export default function TicketPricings() {
     const [editingId, setEditingId] = useState(null);
     const [newPrice, setNewPrice] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const { loading, start, stop } = useLoading();
 
 
     const fetchPricings = async () => {
-        try {
-            const response = await fetch(`/api/ticket-pricings`, {credentials: "include"});
-
-            if (response.status === 200) {
-                const pricings = await response.json();
-                setPricings(pricings);
-            } else {
-                const resData = await response.json();
-                navigate('/error', {
-                    state: {
-                        message: resData.message || 'Failed to load staff data',
-                        code: response.status
-                    }
-                });
-            }
-        } catch (error) {
-            navigate('/error', {
-                state: {
-                    message: 'An unexpected error occurred',
-                    code: 500
-                }
-            });
-        }
+        await fetchData({
+            url: `/api/ticket-pricings`,
+            onSuccess: (data) => setPricings(data),
+            errorMessage: "Failed to load ticket pricings data",
+            navigate,
+            onStart: start,
+            onFinally: stop
+        });
     };
 
     useEffect(() => {
         fetchPricings();
-    }, []);
+    }, [navigate]);
 
     const handleUpdateClick = (id) => {
         setEditingId(id);
@@ -79,6 +68,10 @@ export default function TicketPricings() {
             });
         }
     };
+
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <>

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
+import {deleteData, fetchData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function EventsPage() {
     const [events, setEvents] = useState([]);
@@ -9,56 +12,44 @@ export default function EventsPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
+    const { loading, start, stop } = useLoading();
 
 
     useEffect(() => {
         const fetchEvents = async () => {
-            try {
-                const response = await fetch(`/api/events?page=${page}&pageSize=${pageSize}`, { credentials: "include" });
-
-                if (response.status === 200) {
-                    const data = await response.json();
+            await fetchData({
+                url: `/api/events?page=${page}&pageSize=${pageSize}`,
+                onSuccess: (data) => {
                     setEvents(data?.data || []);
                     setTotalPages(data?.totalPages || 1);
-                } else {
-                    const resData = await response.json();
-                    navigate("/error", {
-                        state: {
-                            message: resData.message || "Failed to load events data",
-                            code: response.status,
-                        },
-                    });
-                }
-            } catch (error) {
-                navigate("/error", {
-                    state: {
-                        message: "An unexpected error occurred",
-                        code: 500,
-                    },
-                });
-            }
+                },
+                errorMessage: "Failed to load events data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+            });
         };
 
         fetchEvents();
-    }, [page, pageSize]);
+    }, [page, pageSize, navigate]);
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this event?")) {
-            try {
-                const res = await fetch(`/api/events/${id}`, { method: "DELETE" });
-                const resData = await res.json();
-
-                if (res.ok) {
-                    setEvents(events.filter((e) => e.id !== id));
-                    alert(resData.message || "Event deleted successfully");
-                } else {
-                    alert(resData.message || "Failed to delete event");
-                }
-            } catch (error) {
-                alert("An error occurred while deleting event.");
-            }
-        }
+    const handleDelete = (id) => {
+        deleteData({
+            url: `/api/events/${id}`,
+            confirmMessage: "Are you sure you want to delete this event?",
+            errorMessage: "Failed to delete event",
+            onSuccess: (resData) => {
+                setEvents(events.filter((e) => e.id !== id));
+                alert(resData.message || "Event deleted successfully");
+            },
+            onError: (message) => alert(message),
+            navigate,
+        });
     };
+
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">

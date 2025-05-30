@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import SearchBar from "../components/SearchBar";
+import {fetchData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function TicketsPage() {
     const [tickets, setTickets] = useState([]);
@@ -10,6 +13,7 @@ export default function TicketsPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
+    const { loading, start, stop } = useLoading();
 
     useEffect(() => {
         setPage(1);
@@ -18,33 +22,18 @@ export default function TicketsPage() {
 
     useEffect(() => {
         const fetchTickets = async () => {
-            try {
-                const response = await fetch(`/api/tickets`, {credentials: "include"});
-
-                if (response.status === 200) {
-                    const tickets = await response.json();
-                    setTickets(tickets);
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load tickets data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
-                });
-            }
+            await fetchData({
+                url: `/api/tickets`,
+                onSuccess: (tickets) => setTickets(tickets),
+                errorMessage: "Failed to load tickets data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+            });
         };
 
         fetchTickets();
-    }, []);
+    }, [navigate]);
 
     const filter = (data, searchQuery) => {
         return data.filter((d) =>
@@ -64,6 +53,9 @@ export default function TicketsPage() {
     const filteredTickets = filter(tickets, searchQuery);
     const { currentTickets, totalPages } = paginate(filteredTickets, page, pageSize);
 
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">

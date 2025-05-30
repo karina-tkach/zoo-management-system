@@ -14,13 +14,13 @@ public class TicketMapper {
         return new Ticket(rs.getInt("id"),
                 UUID.fromString(rs.getString("uuid")),
                 rs.getString("full_name"),
-                rs.getString("ticket_type"),
-                rs.getString("visit_type"),
+                TicketType.valueOf(rs.getString("ticket_type")),
+                VisitType.valueOf(rs.getString("visit_type")),
                 rs.getInt("price"),
                 rs.getDate("visit_date").toLocalDate(),
                 rs.getObject("excursion_id", Integer.class),
                 rs.getString("excursion_name"),
-                rs.getString("purchase_method"),
+                PurchaseMethod.valueOf(rs.getString("purchase_method")),
                 rs.getTimestamp("purchase_time").toLocalDateTime());
     }
 }

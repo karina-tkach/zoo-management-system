@@ -10,13 +10,13 @@ public class Ticket {
     private UUID uuid;
     private String fullName;
     private String email;
-    private String ticketType;
-    private String visitType;
+    private TicketType ticketType;
+    private VisitType visitType;
     private int price; //for return
     private LocalDate visitDate;
     private Integer excursionId;
     private String excursionName; //for return
-    private String purchaseMethod;
+    private PurchaseMethod purchaseMethod;
     private LocalDateTime purchaseTime;
 
     public Ticket() {
@@ -34,7 +34,9 @@ public class Ticket {
         this.purchaseTime = null;
     }
 
-    public Ticket(int id, UUID uuid, String fullName, String ticketType, String visitType, int price, LocalDate visitDate, Integer excursionId, String excursionName, String purchaseMethod, LocalDateTime purchaseTime) {
+    public Ticket(int id, UUID uuid, String fullName, TicketType ticketType,
+                  VisitType visitType, int price, LocalDate visitDate, Integer excursionId,
+                  String excursionName, PurchaseMethod purchaseMethod, LocalDateTime purchaseTime) {
         this.id = id;
         this.uuid = uuid;
         this.fullName = fullName;
@@ -81,19 +83,19 @@ public class Ticket {
         this.fullName = fullName;
     }
 
-    public String getTicketType() {
+    public TicketType getTicketType() {
         return ticketType;
     }
 
-    public void setTicketType(String ticketType) {
+    public void setTicketType(TicketType ticketType) {
         this.ticketType = ticketType;
     }
 
-    public String getVisitType() {
+    public VisitType getVisitType() {
         return visitType;
     }
 
-    public void setVisitType(String visitType) {
+    public void setVisitType(VisitType visitType) {
         this.visitType = visitType;
     }
 
@@ -129,11 +131,11 @@ public class Ticket {
         this.excursionName = excursionName;
     }
 
-    public String getPurchaseMethod() {
+    public PurchaseMethod getPurchaseMethod() {
         return purchaseMethod;
     }
 
-    public void setPurchaseMethod(String purchaseMethod) {
+    public void setPurchaseMethod(PurchaseMethod purchaseMethod) {
         this.purchaseMethod = purchaseMethod;
     }
 
@@ -150,7 +152,7 @@ public class Ticket {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ticket ticket = (Ticket) o;
-        return id == ticket.id && price == ticket.price && Objects.equals(uuid, ticket.uuid) && Objects.equals(fullName, ticket.fullName) && Objects.equals(email, ticket.email) && Objects.equals(ticketType, ticket.ticketType) && Objects.equals(visitType, ticket.visitType) && Objects.equals(visitDate, ticket.visitDate) && Objects.equals(excursionId, ticket.excursionId) && Objects.equals(excursionName, ticket.excursionName) && Objects.equals(purchaseMethod, ticket.purchaseMethod) && Objects.equals(purchaseTime, ticket.purchaseTime);
+        return id == ticket.id && price == ticket.price && Objects.equals(uuid, ticket.uuid) && Objects.equals(fullName, ticket.fullName) && Objects.equals(email, ticket.email) && ticketType == ticket.ticketType && visitType == ticket.visitType && Objects.equals(visitDate, ticket.visitDate) && Objects.equals(excursionId, ticket.excursionId) && Objects.equals(excursionName, ticket.excursionName) && purchaseMethod == ticket.purchaseMethod && Objects.equals(purchaseTime, ticket.purchaseTime);
     }
 
     @Override
@@ -165,13 +167,13 @@ public class Ticket {
                 ", uuid=" + uuid +
                 ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
-                ", ticketType='" + ticketType + '\'' +
-                ", visitType='" + visitType + '\'' +
+                ", ticketType=" + ticketType +
+                ", visitType=" + visitType +
                 ", price=" + price +
                 ", visitDate=" + visitDate +
                 ", excursionId=" + excursionId +
                 ", excursionName='" + excursionName + '\'' +
-                ", purchaseMethod='" + purchaseMethod + '\'' +
+                ", purchaseMethod=" + purchaseMethod +
                 ", purchaseTime=" + purchaseTime +
                 '}';
     }

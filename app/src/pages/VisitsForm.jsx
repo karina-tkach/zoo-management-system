@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import {fetchData, submitData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function VisitsForm() {
     const navigate = useNavigate();
     const [serverError, setServerError] = useState('');
     const [gates, setGates] = useState([]);
+    const { loading, start, stop } = useLoading();
 
     const {
         register,
@@ -23,35 +27,20 @@ export default function VisitsForm() {
 
     useEffect(() => {
         const fetchGates = async () => {
-                try {
-                    const response = await fetch('/api/gates', {
-                        credentials: 'include'
-                    });
-
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        setGates(data?.data);
-                    } else {
-                        const resData = await response.json();
-                        navigate('/error', {
-                            state: {
-                                message: resData.message || 'Failed to fetch gates',
-                                code: response.status
-                            }
-                        });
-                    }
-                } catch (error) {
-                    navigate('/error', {
-                        state: {
-                            message: 'An unexpected error occurred',
-                            code: 500
-                        }
-                    });
-                }
+            await fetchData({
+                url: '/api/gates',
+                onSuccess: (data) => {
+                    setGates(data?.data)
+                },
+                errorMessage: "Failed to load gates data",
+                navigate,
+                onStart: start,
+                onFinally: stop
+            });
         };
 
         fetchGates();
-    }, [])
+    }, [navigate])
 
     const onSubmit = async (data) => {
         setServerError('');
@@ -62,37 +51,22 @@ export default function VisitsForm() {
             notes: data.notes
         };
 
-        try {
-            const response = await fetch('/api/visits', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(payload),
-            });
-            if (response.status === 201) {
-                alert('Visit log added successfully');
-                navigate('/visits');
-            } else if (response.status === 400 || response.status === 404) {
-                const resData = await response.json();
-                setServerError(resData.message || 'Invalid input.');
-            } else {
-                const resData = await response.json();
-                navigate('/error', {
-                    state: {
-                        message: resData.message || "Something went wrong",
-                        code: response.status
-                    }
-                });
-            }
-        } catch (error) {
-            navigate('/error', {
-                state: {
-                    message: "Something went wrong",
-                    code: 500
-                }
-            });
-        }
+        await submitData({
+            url: '/api/visits',
+            method: 'POST',
+            data: payload,
+            isJson: true,
+            entityName: "Visit log",
+            navigate,
+            successPath: "/visits",
+            onValidationError: setServerError,
+            extraAcceptedStatuses: [404],
+        });
     };
+
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6">

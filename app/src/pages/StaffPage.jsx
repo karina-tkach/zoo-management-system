@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
+import {deleteData, fetchData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function StaffPage() {
     const [staff, setStaff] = useState([]);
@@ -9,56 +12,44 @@ export default function StaffPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
+    const { loading, start, stop } = useLoading();
 
 
     useEffect(() => {
         const fetchStaff = async () => {
-            try {
-                const response = await fetch(`/api/staff?page=${page}&pageSize=${pageSize}`, {credentials: "include"});
-
-                if (response.status === 200) {
-                    const staff = await response.json();
+            await fetchData({
+                url: `/api/staff?page=${page}&pageSize=${pageSize}`,
+                onSuccess: (staff) => {
                     setStaff(staff?.data);
                     setTotalPages(staff?.totalPages);
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load staff data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
-                });
-            }
+                },
+                errorMessage: "Failed to load staff data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+            });
         };
 
         fetchStaff();
-    }, [page, pageSize]);
+    }, [page, pageSize, navigate]);
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this staff?")) {
-            try {
-                const res = await fetch(`/api/staff/${id}`, { method: "DELETE" });
-                const resData = await res.json();
-
-                if (res.ok) {
-                    setStaff(staff.filter((s) => s.id !== id));
-                    alert(resData.message || "Staff deleted successfully");
-                } else {
-                    alert(resData.message || "Failed to delete staff");
-                }
-            } catch (error) {
-                alert("An error occurred while deleting staff.");
-            }
-        }
+    const handleDelete = (id) => {
+        deleteData({
+            url: `/api/staff/${id}`,
+            confirmMessage: "Are you sure you want to delete this staff?",
+            errorMessage: "Failed to delete staff",
+            onSuccess: (resData) => {
+                setStaff(staff.filter((s) => s.id !== id));
+                alert(resData.message || "Staff deleted successfully");
+            },
+            onError: (message) => alert(message),
+            navigate,
+        });
     };
+
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">

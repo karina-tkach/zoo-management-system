@@ -1,12 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import {fetchData, submitData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function EventForm() {
     const { id } = useParams();
     const isEdit = Boolean(id);
     const navigate = useNavigate();
     const [serverError, setServerError] = useState('');
+    const { loading, start, stop } = useLoading();
 
     const {
         register,
@@ -28,11 +32,9 @@ export default function EventForm() {
 
     useEffect(() => {
         const fetchEvent = async () => {
-            try {
-                const response = await fetch(`/api/events/${id}`, {credentials: "include"});
-
-                if (response.status === 200) {
-                    const event = await response.json();
+            await fetchData({
+                url: `/api/events/${id}`,
+                onSuccess: (event) =>
                     reset({
                         title: event.title || '',
                         description: event.description || '',
@@ -40,25 +42,13 @@ export default function EventForm() {
                         startTime: event.startTime || '',
                         durationMinutes: event.durationMinutes || '',
                         location: event.location || '',
-                        image: null
-                    });
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load staff data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
-                });
-            }
+                        image: null,
+                    }),
+                errorMessage: "Failed to load event data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+            });
         };
 
         if (isEdit) fetchEvent();
@@ -87,38 +77,21 @@ export default function EventForm() {
             formData.append('image', data.image[0]);
         }
 
-        try {
-            const response = await fetch(url, {
-                method,
-                body: formData,
-                credentials: 'include'
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                alert(`Event ${isEdit ? 'updated' : 'added'} successfully`);
-                navigate('/events');
-            } else if (response.status === 400) {
-                const resData = await response.json();
-                setServerError(resData.message || 'Invalid input.');
-            } else {
-                const resData = await response.json();
-                navigate('/error', {
-                    state: {
-                        message: resData.message || "Something went wrong",
-                        code: response.status
-                    }
-                });
-            }
-        } catch (error) {
-            navigate('/error', {
-                state: {
-                    message: "Something went wrong",
-                    code: 500
-                }
-            });
-        }
+        await submitData({
+            url: url,
+            method: method,
+            data: formData,
+            isJson: false,
+            entityName: "Event",
+            navigate,
+            successPath: "/events",
+            onValidationError: setServerError,
+        });
     };
 
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6">

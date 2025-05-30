@@ -11,8 +11,8 @@ public class TicketPricingMapper {
 
     public static TicketPricing mapToPojo(ResultSet rs, int ignoredRowNum) throws SQLException {
         return new TicketPricing(rs.getInt("id"),
-                rs.getString("ticket_type"),
-                rs.getString("visit_type"),
+                TicketType.valueOf(rs.getString("ticket_type")),
+                VisitType.valueOf(rs.getString("visit_type")),
                 rs.getInt("price"));
     }
 }

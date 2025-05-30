@@ -1,4 +1,4 @@
-import { useSearchParams, Link } from 'react-router-dom';
+import {useSearchParams, Link, useNavigate} from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
     CheckCircle,
@@ -8,40 +8,36 @@ import {
     Ticket,
     LucideMail
 } from 'lucide-react';
+import {fetchData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 const SuccessPage = () => {
     const [searchParams] = useSearchParams();
     const session_id = searchParams.get('session_id');
-
-    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const { loading, start, stop } = useLoading();
     const [sessionDetails, setSessionDetails] = useState(null);
 
     useEffect(() => {
         if (!session_id) return;
 
         const fetchSessionDetails = async () => {
-            try {
-                const res = await fetch(`/api/stripe/get-session?session_id=${session_id}`);
-                if (!res.ok) throw new Error('Failed to load session data.');
-                const data = await res.json();
-                setSessionDetails(data);
-            } catch (err) {
-                console.error(err);
-                setSessionDetails(null);
-            } finally {
-                setLoading(false);
-            }
+            await fetchData({
+                url: `/api/stripe/get-session?session_id=${session_id}`,
+                onSuccess: (data) => setSessionDetails(data),
+                errorMessage: "Failed to load session data",
+                navigate,
+                onStart: start,
+                onFinally: stop
+            });
         };
 
         fetchSessionDetails();
-    }, [session_id]);
+    }, [session_id, navigate]);
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-muted">
-                <p className="text-lg text-muted-foreground">Loading...</p>
-            </div>
-        );
+        return <LoadingPage/>;
     }
 
     if (!sessionDetails) {

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import {fetchData, submitData} from "../utils/fetch.js";
+import LoadingPage from "./LoadingPage.jsx";
+import {useLoading} from "../utils/useLoading.jsx";
 
 export default function TicketAddForm() {
     const navigate = useNavigate();
@@ -8,6 +11,8 @@ export default function TicketAddForm() {
     const [price, setPrice] = useState(null);
     const [excursions, setExcursions] = useState([]);
     const [selectedExcursion, setSelectedExcursion] = useState(null);
+    const priceLoading = useLoading();
+    const excursionLoading = useLoading();
 
     const {
         register,
@@ -31,68 +36,34 @@ export default function TicketAddForm() {
 
 
     useEffect(() => {
-        const fetchPrice = async () => {
-            if (ticketType && visitType && ticketType.length > 0 && visitType.length > 0) {
-                try {
-                    const response = await fetch(`/api/ticket-pricings/by-type?ticketType=${ticketType}&visitType=${visitType}`, {
-                        credentials: 'include'
-                    });
+        if (!ticketType || !visitType) return;
 
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        setPrice(data.price);
-                    } else {
-                        const resData = await response.json();
-                        navigate('/error', {
-                            state: {
-                                message: resData.message || 'Failed to fetch ticket price',
-                                code: response.status
-                            }
-                        });
-                    }
-                } catch (error) {
-                    navigate('/error', {
-                        state: {
-                            message: 'An unexpected error occurred',
-                            code: 500
-                        }
-                    });
-                }
-            }
+        const fetchPrice = async () => {
+            await fetchData({
+                url: `/api/ticket-pricings/by-type?ticketType=${ticketType}&visitType=${visitType}`,
+                onSuccess: (data) => setPrice(data.price),
+                errorMessage: "Failed to load ticket price",
+                navigate,
+                onStart: priceLoading.start,
+                onFinally: priceLoading.stop,
+            });
         };
 
         fetchPrice();
     }, [ticketType, visitType, navigate]);
 
     useEffect(() => {
-        const fetchExcursions = async () => {
-            if (visitType === 'EXCURSION') {
-                try {
-                    const response = await fetch('/api/excursions/available', {
-                        credentials: 'include'
-                    });
+        if (visitType !== 'EXCURSION') return;
 
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        setExcursions(data);
-                    } else {
-                        const resData = await response.json();
-                        navigate('/error', {
-                            state: {
-                                message: resData.message || 'Failed to fetch available excursions',
-                                code: response.status
-                            }
-                        });
-                    }
-                } catch (error) {
-                    navigate('/error', {
-                        state: {
-                            message: 'An unexpected error occurred',
-                            code: 500
-                        }
-                    });
-                }
-            }
+        const fetchExcursions = async () => {
+            await fetchData({
+                url: '/api/excursions/available',
+                onSuccess: (data) => setExcursions(data),
+                errorMessage: "Failed to load available excursions",
+                navigate,
+                onStart: excursionLoading.start,
+                onFinally: excursionLoading.stop,
+            });
         };
 
         fetchExcursions();
@@ -111,37 +82,21 @@ export default function TicketAddForm() {
 
     const onSubmit = async (data) => {
         setServerError('');
-        try {
-            const response = await fetch('/api/tickets', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(data),
-            });
-            if (response.status === 201) {
-                alert('Ticket added successfully');
-                navigate('/tickets');
-            } else if (response.status === 400) {
-                const resData = await response.json();
-                setServerError(resData.message || 'Invalid input.');
-            } else {
-                const resData = await response.json();
-                navigate('/error', {
-                    state: {
-                        message: resData.message || "Something went wrong",
-                        code: response.status
-                    }
-                });
-            }
-        } catch (error) {
-            navigate('/error', {
-                state: {
-                    message: "Something went wrong",
-                    code: 500
-                }
-            });
-        }
+        await submitData({
+            url: '/api/tickets',
+            method: 'POST',
+            data,
+            isJson: true,
+            entityName: "Ticket",
+            navigate,
+            successPath: "/tickets",
+            onValidationError: setServerError,
+        });
     };
+
+    if (priceLoading.loading || excursionLoading.loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6">

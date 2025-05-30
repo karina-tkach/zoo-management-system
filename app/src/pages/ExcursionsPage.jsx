@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
+import {fetchData, deleteData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function ExcursionsPage() {
     const [excursions, setExcursions] = useState([]);
@@ -9,57 +12,46 @@ export default function ExcursionsPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
+    const { loading, start, stop } = useLoading();
 
 
     useEffect(() => {
         const fetchExcursions = async () => {
-            try {
-                const response = await fetch(`/api/excursions?page=${page}&pageSize=${pageSize}`, {credentials: "include"});
-
-                if (response.status === 200) {
-                    const excursions = await response.json();
+            await fetchData({
+                url: `/api/excursions?page=${page}&pageSize=${pageSize}`,
+                onSuccess: (excursions) => {
                     setExcursions(excursions?.data);
                     setTotalPages(excursions?.totalPages);
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load excursions data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
-                });
-            }
+                },
+                errorMessage: "Failed to load excursions data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+
+            });
         };
 
         fetchExcursions();
-    }, [page, pageSize]);
+    }, [page, pageSize, navigate]);
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this excursion?")) {
-            try {
-                const res = await fetch(`/api/excursions/${id}`, { method: "DELETE" });
-                const resData = await res.json();
-
-                if (res.ok) {
-                    setExcursions(excursions.filter((e) => e.id !== id));
-                    alert(resData.message || "Excursion deleted successfully");
-                } else {
-                    alert(resData.message || "Failed to delete excursion");
-                }
-            } catch (error) {
-                alert("An error occurred while deleting excursion.");
-            }
-        }
+    const handleDelete =  (id) => {
+        deleteData({
+            url: `/api/excursions/${id}`,
+            confirmMessage: "Are you sure you want to delete this excursion?",
+            errorMessage: "Failed to delete excursion",
+            onSuccess: (resData) => {
+                setExcursions(excursions.filter((e) => e.id !== id));
+                alert(resData.message || "Excursion deleted successfully");
+            },
+            onError: (message) => alert(message),
+            navigate,
+        });
     };
 
+
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">

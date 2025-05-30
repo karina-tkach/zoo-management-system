@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import {fetchData, submitData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function ExcursionForm() {
     const { id } = useParams();
@@ -8,7 +11,7 @@ export default function ExcursionForm() {
     const navigate = useNavigate();
     const [serverError, setServerError] = useState('');
     const [guides, setGuides] = useState([]);
-    const [guidesLoaded, setGuidesLoaded] = useState(false);
+    const { loading, start, stop } = useLoading();
 
     const {
         register,
@@ -29,71 +32,43 @@ export default function ExcursionForm() {
 
 
     useEffect(() => {
-        const fetchExcursion = async () => {
-            try {
-                const response = await fetch(`/api/excursions/${id}`, {credentials: "include"});
-
-                if (response.status === 200) {
-                    const excursion = await response.json();
-                    reset({
-                        topic: excursion.topic || '',
-                        guide: excursion.guide ? excursion.guide.id.toString() : '',
-                        description: excursion.description || '',
-                        date: excursion.date || '',
-                        startTime: excursion.startTime || '',
-                        durationMinutes: excursion.durationMinutes || '',
-                        maxParticipants: excursion.maxParticipants || ''
-                    });
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load excursion data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
-                });
-            }
-        };
-
-        const fetchGuides = async () => {
-            try {
-                const response  = await fetch('/api/users/by-role?role=GUIDE', { credentials: 'include' });
-
-                if (response.status === 200) {
-                    const guides = await response.json();
+        const loadData = async () => {
+            await fetchData({
+                url: '/api/users/by-role?role=GUIDE',
+                onSuccess: (guides) => {
                     setGuides(guides);
                     setGuidesLoaded(true);
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load excursion data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
+                },
+                errorMessage: "Failed to load guides data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+            });
+
+            if (isEdit) {
+                await fetchData({
+                    url: `/api/excursions/${id}`,
+                    onSuccess: (excursion) =>
+                        reset({
+                            topic: excursion.topic || '',
+                            guide: excursion.guide ? excursion.guide.id.toString() : '',
+                            description: excursion.description || '',
+                            date: excursion.date || '',
+                            startTime: excursion.startTime || '',
+                            durationMinutes: excursion.durationMinutes || '',
+                            maxParticipants: excursion.maxParticipants || ''
+                        }),
+                    errorMessage: "Failed to load excursion data",
+                    navigate,
+                    onStart: start,
+                    onFinally: stop,
                 });
             }
         };
 
-        fetchGuides();
-        if (isEdit && guidesLoaded) fetchExcursion();
+        loadData();
 
-    }, [id, isEdit, guidesLoaded, reset, navigate]);
+    }, [id, isEdit, reset, navigate]);
 
     const onSubmit = async (data) => {
         const selectedGuide = guides.find(g => g.id.toString() === data.guide);
@@ -106,38 +81,21 @@ export default function ExcursionForm() {
         const method = isEdit ? 'PATCH' : 'POST';
         const url = isEdit ? `/api/excursions/${id}` : '/api/excursions';
 
-        try {
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-                credentials: 'include'
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                alert(`Excursion ${isEdit ? 'updated' : 'added'} successfully`);
-                navigate('/excursions');
-            } else if (response.status === 400) {
-                const resData = await response.json();
-                setServerError(resData.message || 'Invalid input.');
-            } else {
-                const resData = await response.json();
-                navigate('/error', {
-                    state: {
-                        message: resData.message || "Something went wrong",
-                        code: response.status
-                    }
-                });
-            }
-        } catch (error) {
-            navigate('/error', {
-                state: {
-                    message: "Something went wrong",
-                    code: 500
-                }
-            });
-        }
+        await submitData({
+            url: url,
+            method: method,
+            data,
+            isJson: true,
+            entityName: "Excursion",
+            navigate,
+            successPath: "/excursions",
+            onValidationError: setServerError,
+        });
     };
+
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
 
     return (

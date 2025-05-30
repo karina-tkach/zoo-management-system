@@ -13,9 +13,7 @@ import org.university.zoomanagementsystem.exception.validation.TicketValidationE
 import org.university.zoomanagementsystem.excursion.Excursion;
 import org.university.zoomanagementsystem.excursion.service.ExcursionService;
 import org.university.zoomanagementsystem.mail.MailSenderService;
-import org.university.zoomanagementsystem.ticket.Ticket;
-import org.university.zoomanagementsystem.ticket.TicketPricing;
-import org.university.zoomanagementsystem.ticket.TicketValidator;
+import org.university.zoomanagementsystem.ticket.*;
 import org.university.zoomanagementsystem.ticket.repository.TicketRepository;
 
 import java.io.UnsupportedEncodingException;
@@ -47,10 +45,10 @@ public class TicketService {
         try {
             logger.info("Try to add ticket offline");
             ticket.setUuid(UUID.randomUUID());
-            ticket.setPurchaseMethod("OFFLINE");
+            ticket.setPurchaseMethod(PurchaseMethod.OFFLINE);
             ticketValidator.validate(ticket);
 
-            int pricingId = ticketPricingService.getTicketPricingByTicketAndVisitType(ticket.getTicketType(), ticket.getVisitType()).getId();
+            int pricingId = ticketPricingService.getTicketPricingByTicketAndVisitType(ticket.getTicketType().getName(), ticket.getVisitType().getName()).getId();
             if (ticket.getExcursionId() != null) {
                 Excursion excursion = excursionService.getExcursionById(ticket.getExcursionId());
                 if (excursion.getBookedCount() == excursion.getMaxParticipants()) {
@@ -79,10 +77,10 @@ public class TicketService {
         try {
             logger.info("Try to add ticket online");
             ticket.setUuid(UUID.randomUUID());
-            ticket.setPurchaseMethod("ONLINE");
+            ticket.setPurchaseMethod(PurchaseMethod.ONLINE);
             ticketValidator.validate(ticket);
 
-            int pricingId = ticketPricingService.getTicketPricingByTicketAndVisitType(ticket.getTicketType(), ticket.getVisitType()).getId();
+            int pricingId = ticketPricingService.getTicketPricingByTicketAndVisitType(ticket.getTicketType().getName(), ticket.getVisitType().getName()).getId();
             if (ticket.getExcursionId() != null) {
                 Excursion excursion = excursionService.getExcursionById(ticket.getExcursionId());
                 if (excursion.getBookedCount() == excursion.getMaxParticipants()) {
@@ -116,7 +114,7 @@ public class TicketService {
             logger.info("Try to validate ticket to buy");
             ticketValidator.validateForOnlineBuy(ticket);
 
-            TicketPricing ticketPricing = ticketPricingService.getTicketPricingByTicketAndVisitType(ticket.getTicketType(), ticket.getVisitType());
+            TicketPricing ticketPricing = ticketPricingService.getTicketPricingByTicketAndVisitType(ticket.getTicketType().getName(), ticket.getVisitType().getName());
             if (ticketPricing.getPrice() != ticket.getPrice()) {
                 throw new TicketValidationException("Price was wrong");
             }
@@ -198,11 +196,11 @@ public class TicketService {
                 "</tr>" +
                 "<tr>" +
                 "<td style=\"padding: 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black;\">Ticket type</td>" +
-                "<td style=\"padding: 10px; border-bottom: 1px solid black; border-right: 1px solid black;\">" + ticket.getTicketType() + "</td>" +
+                "<td style=\"padding: 10px; border-bottom: 1px solid black; border-right: 1px solid black;\">" + ticket.getTicketType().getName() + "</td>" +
                 "</tr>" +
                 "<tr>" +
                 "<td style=\"padding: 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black;\">Visit type</td>" +
-                "<td style=\"padding: 10px; border-bottom: 1px solid black; border-right: 1px solid black;\">" + ticket.getVisitType() + "</td>" +
+                "<td style=\"padding: 10px; border-bottom: 1px solid black; border-right: 1px solid black;\">" + ticket.getVisitType().getName() + "</td>" +
                 "</tr>" +
                 excursionString +
                 "<tr>" +

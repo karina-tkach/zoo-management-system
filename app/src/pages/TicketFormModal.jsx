@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext.jsx";
+import {fetchData} from "../utils/fetch.js";
+import LoadingPage from "./LoadingPage.jsx";
+import {useLoading} from "../utils/useLoading.jsx";
 
 export default function TicketFormModal({ visitType, excursion, onClose }) {
     const { user, loading } = useAuth();
@@ -17,39 +20,25 @@ export default function TicketFormModal({ visitType, excursion, onClose }) {
         formState: { errors },
     } = useForm();
     const [price, setPrice] = useState(null);
+    const priceLoading = useLoading();
 
     const ticketType = watch("ticketType");
 
     useEffect(() => {
-        const fetchPrice = async () => {
-            if (ticketType && visitType) {
-                try {
-                    const response = await fetch(`/api/ticket-pricings/by-type?ticketType=${ticketType}&visitType=${visitType}`, {
-                        credentials: "include",
-                    });
+        if (!ticketType || !visitType) return;
 
-                    if (response.status === 200) {
-                        const data = await response.json();
-                        setPrice(data.price);
-                        setValue("price", data.price);
-                    } else {
-                        const resData = await response.json();
-                        navigate('/error', {
-                            state: {
-                                message: resData.message || 'Failed to fetch ticket price',
-                                code: response.status
-                            }
-                        });
-                    }
-                } catch (error) {
-                    navigate('/error', {
-                        state: {
-                            message: 'An unexpected error occurred while fetching ticket price',
-                            code: 500
-                        }
-                    });
-                }
-            }
+        const fetchPrice = async () => {
+            await fetchData({
+                url: `/api/ticket-pricings/by-type?ticketType=${ticketType}&visitType=${visitType}`,
+                onSuccess: (data) => {
+                    setPrice(data.price);
+                    setValue("price", data.price);
+                },
+                errorMessage: "Failed to load ticket price",
+                navigate,
+                onStart: priceLoading.start,
+                onFinally: priceLoading.stop,
+            });
         };
 
         fetchPrice();
@@ -111,17 +100,8 @@ export default function TicketFormModal({ visitType, excursion, onClose }) {
         }
     };
 
-    if (loading || isCheckoutLoading) {
-        return (
-            <div className="relative p-6 min-h-screen bg-gray-200">
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center z-50">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid mx-auto mb-4" />
-                        <p className="text-xl font-semibold text-gray-700">Loading...</p>
-                    </div>
-                </div>
-            </div>
-        );
+    if (loading || priceLoading.loading || isCheckoutLoading) {
+        return <LoadingPage/>;
     }
 
     return (

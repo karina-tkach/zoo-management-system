@@ -3,18 +3,10 @@ package org.university.zoomanagementsystem.ticket.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
-import org.university.zoomanagementsystem.events.Event;
-import org.university.zoomanagementsystem.events.service.EventService;
-import org.university.zoomanagementsystem.exception.not_found.EventNotFoundException;
 import org.university.zoomanagementsystem.exception.not_found.TicketPricingNotFoundException;
-import org.university.zoomanagementsystem.exception.validation.EventValidationException;
 import org.university.zoomanagementsystem.exception.validation.TicketPricingValidationException;
-import org.university.zoomanagementsystem.exception.validation.ValidationException;
 import org.university.zoomanagementsystem.ticket.TicketPricing;
-import org.university.zoomanagementsystem.ticket.TicketPricingMapper;
 import org.university.zoomanagementsystem.ticket.repository.TicketPricingRepository;
 
 import java.util.List;

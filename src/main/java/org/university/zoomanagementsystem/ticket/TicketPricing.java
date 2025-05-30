@@ -4,8 +4,8 @@ import java.util.Objects;
 
 public class TicketPricing {
     private int id;
-    private String ticketType;
-    private String visitType;
+    private TicketType ticketType;
+    private VisitType visitType;
     private int price;
 
     public TicketPricing() {
@@ -15,7 +15,7 @@ public class TicketPricing {
         this.price = -1;
     }
 
-    public TicketPricing(int id, String ticketType, String visitType, int price) {
+    public TicketPricing(int id, TicketType ticketType, VisitType visitType, int price) {
         this.id = id;
         this.ticketType = ticketType;
         this.visitType = visitType;
@@ -30,19 +30,19 @@ public class TicketPricing {
         this.id = id;
     }
 
-    public String getTicketType() {
+    public TicketType getTicketType() {
         return ticketType;
     }
 
-    public void setTicketType(String ticketType) {
+    public void setTicketType(TicketType ticketType) {
         this.ticketType = ticketType;
     }
 
-    public String getVisitType() {
+    public VisitType getVisitType() {
         return visitType;
     }
 
-    public void setVisitType(String visitType) {
+    public void setVisitType(VisitType visitType) {
         this.visitType = visitType;
     }
 
@@ -59,7 +59,7 @@ public class TicketPricing {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TicketPricing that = (TicketPricing) o;
-        return id == that.id && price == that.price && Objects.equals(ticketType, that.ticketType) && Objects.equals(visitType, that.visitType);
+        return id == that.id && price == that.price && ticketType == that.ticketType && visitType == that.visitType;
     }
 
     @Override
@@ -71,8 +71,8 @@ public class TicketPricing {
     public String toString() {
         return "TicketPricing{" +
                 "id=" + id +
-                ", ticketType='" + ticketType + '\'' +
-                ", visitType='" + visitType + '\'' +
+                ", ticketType=" + ticketType +
+                ", visitType=" + visitType +
                 ", price=" + price +
                 '}';
     }

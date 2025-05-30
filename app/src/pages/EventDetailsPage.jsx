@@ -1,57 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import { ArrowLeft } from "lucide-react";
+import LoadingPage from "./LoadingPage.jsx";
+import { fetchData } from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
 
 export default function EventsView() {
     const [event, setEvent] = useState([]);
     const navigate = useNavigate();
     const { id } = useParams();
-    const { loading } = useAuth();
+    const { loading, start, stop } = useLoading();
 
     useEffect(() => {
         const fetchEvent = async () => {
-            try {
-                const response = await fetch(`/api/events/${id}`, {
-                    credentials: "include",
-                });
-
-                if (response.status === 200) {
-                    const data = await response.json();
-                    setEvent(data || []);
-                } else {
-                    const resData = await response.json();
-                    navigate("/error", {
-                        state: {
-                            message: resData.message || "Failed to load event data",
-                            code: response.status,
-                        },
-                    });
-                }
-            } catch (error) {
-                navigate("/error", {
-                    state: {
-                        message: "An unexpected error occurred",
-                        code: 500,
-                    },
-                });
-            }
+            await fetchData({
+                url: `/api/events/${id}`,
+                onSuccess: (data) => setEvent(data || []),
+                errorMessage: "Failed to load event data",
+                navigate,
+                onStart: start,
+                onFinally: stop
+            });
         };
 
         fetchEvent();
-    }, []);
+    }, [id, navigate]);
 
     if (loading) {
-        return (
-            <div className="relative p-6 min-h-screen bg-green-50">
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center z-50">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-600 border-solid mx-auto mb-4" />
-                        <p className="text-2xl font-semibold text-green-700">Loading...</p>
-                    </div>
-                </div>
-            </div>
-        );
+        return <LoadingPage/>;
     }
 
     return (

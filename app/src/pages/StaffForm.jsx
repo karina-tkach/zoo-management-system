@@ -1,12 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import {fetchData, submitData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function StaffForm() {
     const { id } = useParams();
     const isEdit = Boolean(id);
     const navigate = useNavigate();
     const [serverError, setServerError] = useState('');
+    const { loading, start, stop } = useLoading();
 
     const {
         register,
@@ -29,11 +33,9 @@ export default function StaffForm() {
 
     useEffect(() => {
         const fetchStaff = async () => {
-            try {
-                const response = await fetch(`/api/staff/${id}`, {credentials: "include"});
-
-                if (response.status === 200) {
-                    const staff = await response.json();
+            await fetchData({
+                url: `/api/staff/${id}`,
+                onSuccess: (staff) =>
                     reset({
                         name: staff.name || '',
                         email: staff.email || '',
@@ -43,24 +45,12 @@ export default function StaffForm() {
                         workingDays: staff.workingDays || '',
                         shiftStart: staff.shiftStart || '',
                         shiftEnd: staff.shiftEnd || ''
-                    });
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load staff data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
-                });
-            }
+                    }),
+                errorMessage: "Failed to load staff data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+            });
         };
 
         if (isEdit) fetchStaff();
@@ -71,39 +61,21 @@ export default function StaffForm() {
         const method = isEdit ? 'PATCH' : 'POST';
         const url = isEdit ? `/api/staff/${id}` : '/api/staff';
 
-        try {
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-                credentials: 'include'
-            });
-
-            if (response.status === 200 || response.status === 201) {
-                alert(`Staff ${isEdit ? 'updated' : 'added'} successfully`);
-                navigate('/staff');
-            } else if (response.status === 400) {
-                const resData = await response.json();
-                setServerError(resData.message || 'Invalid input.');
-            } else {
-                const resData = await response.json();
-                navigate('/error', {
-                    state: {
-                        message: resData.message || "Something went wrong",
-                        code: response.status
-                    }
-                });
-            }
-        } catch (error) {
-            navigate('/error', {
-                state: {
-                    message: "Something went wrong",
-                    code: 500
-                }
-            });
-        }
+        await submitData({
+            url: url,
+            method: method,
+            data,
+            isJson: true,
+            entityName: "Staff",
+            navigate,
+            successPath: "/staff",
+            onValidationError: setServerError,
+        });
     };
 
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6">

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
+import {fetchData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
 
 export default function VisitsPage() {
     const [visits, setVisits] = useState([]);
@@ -9,37 +12,29 @@ export default function VisitsPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
+    const { loading, start, stop } = useLoading();
 
     useEffect(() => {
         const fetchVisits = async () => {
-            try {
-                const response = await fetch(`/api/visits?page=${page}&pageSize=${pageSize}`, {credentials: "include"});
-
-                if (response.status === 200) {
-                    const visits = await response.json();
+            await fetchData({
+                url: `/api/visits?page=${page}&pageSize=${pageSize}`,
+                onSuccess: (visits) => {
                     setVisits(visits?.data);
                     setTotalPages(visits?.totalPages);
-                } else {
-                    const resData = await response.json();
-                    navigate('/error', {
-                        state: {
-                            message: resData.message || 'Failed to load visits data',
-                            code: response.status
-                        }
-                    });
-                }
-            } catch (error) {
-                navigate('/error', {
-                    state: {
-                        message: 'An unexpected error occurred',
-                        code: 500
-                    }
-                });
-            }
+                },
+                errorMessage: "Failed to load visits data",
+                navigate,
+                onStart: start,
+                onFinally: stop
+            });
         };
 
         fetchVisits();
-    }, [page, pageSize]);
+    }, [page, pageSize, navigate]);
+
+    if (loading) {
+        return <LoadingPage/>;
+    }
 
     return (
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">
