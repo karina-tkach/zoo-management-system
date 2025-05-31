@@ -144,6 +144,33 @@ public class ExcursionService {
         }
     }
 
+    public List<Excursion> getExcursionsByGuideWithPagination(int guideId, int pageNumber, int limit) {
+        try {
+            if (pageNumber < 0 || limit < 0) {
+                throw new ValidationException("Page number and limit must be greater than 0");
+            }
+            logger.info("Try to get excursions by guide with pagination");
+            List<Excursion> excursions = excursionRepository.getExcursionsByGuideWithPagination(guideId, pageNumber, limit);
+            logger.info("Excursions by guide were fetched with pagination successfully");
+            return excursions;
+        } catch (ValidationException | DataAccessException exception) {
+            logger.warn("Excursions by guide weren't fetched with pagination\n{}", exception.getMessage());
+            throw exception;
+        }
+    }
+
+    public int getExcursionsByGuideRowsCount(int guideId) {
+        try {
+            logger.info("Try to get excursions by guide rows count");
+            int count = excursionRepository.getExcursionsByGuideRowsCount(guideId);
+            logger.info("Excursions by guide rows count were fetched successfully");
+            return count;
+        } catch (DataAccessException exception) {
+            logger.warn("Excursions by guide rows count weren't fetched\n{}", exception.getMessage());
+            throw exception;
+        }
+    }
+
     public List<Excursion> getAvailableExcursions() {
         try {
             logger.info("Try to get available excursions");

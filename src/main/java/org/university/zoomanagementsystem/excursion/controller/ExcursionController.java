@@ -6,7 +6,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.university.zoomanagementsystem.excursion.Excursion;
 import org.university.zoomanagementsystem.excursion.service.ExcursionService;
+import org.university.zoomanagementsystem.user.User;
+import org.university.zoomanagementsystem.user.service.UserService;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +18,11 @@ import java.util.Map;
 @RequestMapping("/api/excursions")
 public class ExcursionController {
     private final ExcursionService excursionService;
+    private final UserService userService;
 
-    public ExcursionController(ExcursionService excursionService) {
+    public ExcursionController(ExcursionService excursionService, UserService userService) {
         this.excursionService = excursionService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -27,6 +32,26 @@ public class ExcursionController {
 
         List<Excursion> excursionList = excursionService.getExcursionsWithPagination(page, pageSize);
         int rows = excursionService.getExcursionsRowsCount();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("data", excursionList);
+        response.put("currentPage", page);
+        response.put("pageSize", pageSize);
+        response.put("totalPages", (int) Math.ceil(rows / (float) pageSize));
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PreAuthorize("hasAuthority('GUIDE')")
+    @GetMapping("/guide")
+    public ResponseEntity<Map<String, Object>> getAllExcursionsByGuide(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize,
+            Principal principal) {
+        User guide = userService.getUserByEmail(principal.getName());
+
+        List<Excursion> excursionList = excursionService.getExcursionsByGuideWithPagination(guide.getId(), page, pageSize);
+        int rows = excursionService.getExcursionsByGuideRowsCount(guide.getId());
 
         Map<String, Object> response = new HashMap<>();
         response.put("data", excursionList);

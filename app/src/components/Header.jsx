@@ -1,5 +1,4 @@
-import { Home, PawPrint, Info, LogIn, LogOut, UserPlus, Users, Map, PartyPopper, Currency,
-Ticket, Store, ScrollText} from "lucide-react";
+import { Home} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {useEffect} from "react";
@@ -8,6 +7,7 @@ import EventManagerNav from "./nav/EventManagerNav.jsx";
 import TicketAgentNav from "./nav/TicketAgentNav.jsx";
 import VisitorNav from "./nav/VisitorNav.jsx";
 import AuthNav from "./nav/AuthNav.jsx";
+import GuideNav from "./nav/GuideNav.jsx";
 
 export default function Header() {
     const { user, loading, fetchUser } = useAuth();
@@ -17,6 +17,7 @@ export default function Header() {
     const isEventManager = user?.roles.includes("EVENT_MANAGER");
     const isVisitor = user?.roles.includes("VISITOR");
     const isTicketAgent = user?.roles.includes("TICKET_AGENT");
+    const isGuide = user?.roles.includes("GUIDE");
 
     useEffect(() => {
         fetchUser();
@@ -57,6 +58,7 @@ export default function Header() {
                     {isAdmin && <AdminNav />}
                     {isEventManager && <EventManagerNav />}
                     {isTicketAgent && <TicketAgentNav />}
+                    {isGuide && <GuideNav />}
                     {(!isLoggedIn || isVisitor) && <VisitorNav />}
                     <AuthNav isLoggedIn={isLoggedIn} onLogout={handleLogout} />
                 </nav>

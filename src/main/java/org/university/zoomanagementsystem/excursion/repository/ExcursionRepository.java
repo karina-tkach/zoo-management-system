@@ -19,5 +19,9 @@ public interface ExcursionRepository {
 
     int getExcursionsRowsCount();
 
+    List<Excursion> getExcursionsByGuideWithPagination(int guideId, int pageNumber, int limit);
+
+    int getExcursionsByGuideRowsCount(int guideId);
+
     List<Excursion> getAvailableExcursions();
 }

@@ -128,8 +128,7 @@ public class ExcursionRepositoryImpl implements ExcursionRepository {
     public List<Excursion> getExcursionsWithPagination(int pageNumber, int limit) {
         String query = """
         SELECT 
-            e.id, e.topic, e.guide_id, e.description, e.date, e.start_time, e.duration_minutes,
-            e.max_participants, e.booked_count, u.name, u.email, u.role
+            e.*, u.name, u.email, u.role
         FROM excursions e
         JOIN users u ON e.guide_id = u.id
         ORDER BY e.id
@@ -147,6 +146,36 @@ public class ExcursionRepositoryImpl implements ExcursionRepository {
     public int getExcursionsRowsCount() {
         String query = "SELECT COUNT(*) FROM excursions";
         Integer count = jdbcTemplate.queryForObject(query, new MapSqlParameterSource(), Integer.class);
+        return (count != null) ? count : 0;
+    }
+
+    @Override
+    public List<Excursion> getExcursionsByGuideWithPagination(int guideId, int pageNumber, int limit) {
+        String query = """
+        SELECT 
+            e.*, u.name, u.email, u.role
+        FROM excursions e
+        JOIN users u ON e.guide_id = u.id
+        WHERE e.guide_id = :guide_id
+        ORDER BY e.id
+        LIMIT :limit
+        OFFSET :offset
+    """;
+
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("guide_id", guideId)
+                .addValue("limit", limit)
+                .addValue("offset", getOffset(pageNumber, limit));
+
+        return jdbcTemplate.query(query, parameters, ExcursionMapper::mapToPojo);
+    }
+
+    @Override
+    public int getExcursionsByGuideRowsCount(int guideId) {
+        String query = "SELECT COUNT(*) FROM excursions WHERE guide_id = :guide_id";
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("guide_id", guideId);
+        Integer count = jdbcTemplate.queryForObject(query, parameters, Integer.class);
         return (count != null) ? count : 0;
     }
 
