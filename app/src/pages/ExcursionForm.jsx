@@ -37,7 +37,6 @@ export default function ExcursionForm() {
                 url: '/api/users/by-role?role=GUIDE',
                 onSuccess: (guides) => {
                     setGuides(guides);
-                    setGuidesLoaded(true);
                 },
                 errorMessage: "Failed to load guides data",
                 navigate,

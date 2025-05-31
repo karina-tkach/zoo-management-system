@@ -59,6 +59,9 @@ public class ExcursionValidator {
         if (user == null) {
             throw new ExcursionValidationException("Excursion guide was null");
         }
+        else if (user.getId() < 0) {
+            throw new ExcursionValidationException("Excursion guide id was negative");
+        }
         else if (!user.getRole().equals(Role.GUIDE)) {
             throw new ExcursionValidationException("Excursion guide role must be 'GUIDE'");
         }
@@ -101,7 +104,7 @@ public class ExcursionValidator {
     }
 
     private void validateMaxParticipantsAndBookedCount(int maxParticipants, int bookedCount) {
-        if(maxParticipants < 0 || bookedCount < 0) {
+        if (maxParticipants <= 0 || bookedCount < 0) {
             throw new ExcursionValidationException("Excursion maxParticipants or bookedCount must be non-negative");
         }
         else if(maxParticipants < bookedCount) {

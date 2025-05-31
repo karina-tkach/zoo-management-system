@@ -5,11 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.university.zoomanagementsystem.exception.not_found.ExcursionNotFoundException;
+import org.university.zoomanagementsystem.exception.not_found.UserNotFoundException;
 import org.university.zoomanagementsystem.exception.validation.ExcursionValidationException;
 import org.university.zoomanagementsystem.exception.validation.ValidationException;
 import org.university.zoomanagementsystem.excursion.Excursion;
 import org.university.zoomanagementsystem.excursion.ExcursionValidator;
 import org.university.zoomanagementsystem.excursion.repository.ExcursionRepository;
+import org.university.zoomanagementsystem.user.Role;
+import org.university.zoomanagementsystem.user.User;
+import org.university.zoomanagementsystem.user.service.UserService;
 
 import java.util.List;
 
@@ -17,12 +21,16 @@ import java.util.List;
 public class ExcursionService {
     private final ExcursionValidator excursionValidator;
     private final ExcursionRepository excursionRepository;
+    private final UserService userService;
 
     private final Logger logger = LoggerFactory.getLogger(ExcursionService.class);
 
-    public ExcursionService(ExcursionValidator excursionValidator, ExcursionRepository excursionRepository) {
+    public ExcursionService(ExcursionValidator excursionValidator,
+                            ExcursionRepository excursionRepository,
+                            UserService userService) {
         this.excursionValidator = excursionValidator;
         this.excursionRepository = excursionRepository;
+        this.userService = userService;
     }
 
     public Excursion addExcursion(Excursion excursion) {
@@ -35,6 +43,11 @@ public class ExcursionService {
                 throw new ExcursionValidationException("This guide is already scheduled for an excursion during the specified time.");
             }
 
+            User guide = userService.getUserById(excursion.getGuide().getId());
+            if (!guide.getRole().equals(Role.GUIDE)) {
+                throw new ExcursionValidationException("User is not having role 'GUIDE'");
+            }
+
             int id = excursionRepository.addExcursion(excursion);
             if (id == -1) {
                 throw new ExcursionValidationException("Unable to retrieve the generated key");
@@ -43,7 +56,8 @@ public class ExcursionService {
             excursion.setId(id);
             logger.info("Excursion was added:\n{}", excursion);
             return getExcursionById(id);
-        } catch (ExcursionValidationException | ExcursionNotFoundException | DataAccessException exception) {
+        } catch (ExcursionValidationException | ExcursionNotFoundException |
+                 UserNotFoundException | DataAccessException exception) {
             logger.warn("Excursion wasn't added: {}\n{}", excursion, exception.getMessage());
             throw exception;
         }
@@ -70,11 +84,21 @@ public class ExcursionService {
             logger.info("Try to update excursion");
 
             excursionValidator.validateExcursionForUpdate(excursionToUpdate, excursion);
+
+            if (excursionRepository.guideHasConflict(excursion)) {
+                throw new ExcursionValidationException("This guide is already scheduled for an excursion during the specified time.");
+            }
+
+            User guide = userService.getUserById(excursion.getGuide().getId());
+            if (!guide.getRole().equals(Role.GUIDE)) {
+                throw new ExcursionValidationException("User is not having role 'GUIDE'");
+            }
             excursionRepository.updateExcursionById(excursion, id);
 
             logger.info("Excursion was updated:\n{}", excursion);
             return getExcursionById(id);
-        } catch (ExcursionNotFoundException | ExcursionValidationException | DataAccessException exception) {
+        } catch (ExcursionNotFoundException | ExcursionValidationException |
+                 UserNotFoundException | DataAccessException exception) {
             logger.warn("Excursion wasn't updated: {}\n{}", id, exception.getMessage());
             throw exception;
         }

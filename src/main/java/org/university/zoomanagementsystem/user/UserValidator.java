@@ -18,6 +18,9 @@ public class UserValidator {
 
     public void validateUserToDelete(User user) {
         validateRole(user.getRole());
+        if (user.getRole() == Role.ADMIN) {
+            throw new UserValidationException("User has role 'ADMIN'");
+        }
     }
 
     public void validateUsersForUpdate(User userToUpdate, User user) {
@@ -45,9 +48,6 @@ public class UserValidator {
     private void validateRole(Role role) {
         if (role == null) {
             throw new UserValidationException("User role was null");
-        }
-        if (role == Role.ADMIN) {
-            throw new UserValidationException("User has role 'ADMIN'");
         }
     }
 

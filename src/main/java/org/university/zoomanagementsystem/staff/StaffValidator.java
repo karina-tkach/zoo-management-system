@@ -68,8 +68,8 @@ public class StaffValidator {
         if (salary == null) {
             throw new StaffValidationException("Staff salary was null");
         }
-        if (salary < 0) {
-            throw new StaffValidationException("Staff salary must be non-negative");
+        if (salary <= 0) {
+            throw new StaffValidationException("Staff salary must be positive");
         }
     }
 

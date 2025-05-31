@@ -99,13 +99,23 @@ public class StaffService {
             staffValidator.validateStaffForUpdate(staffToUpdate, staff);
 
             User user = new User(-1, dto.getName(), dto.getPassword(), dto.getEmail(), dto.getRole());
+            if (dto.getRole().equals(Role.VISITOR)) {
+                throw new StaffValidationException("Staff can't have role 'VISITOR'");
+            }
+
+            User existsUser = userService.getUserByEmail(user.getEmail());
+            if (existsUser != null) {
+                throw new UserValidationException(
+                        "User with email '" + existsUser.getEmail() + "' already exists"
+                );
+            }
             userService.updateUserWithoutPasswordChangeById(user, staffDTOToUpdate.getUserId());
 
             staffRepository.updateStaffById(staff, id);
 
             logger.info("Staff was updated:\n{}", dto);
             return getStaffById(id);
-        } catch (StaffNotFoundException |StaffValidationException |
+        } catch (StaffNotFoundException | StaffValidationException |
                  UserValidationException | DataAccessException exception) {
             logger.warn("Staff wasn't updated: {}\n{}", id, exception.getMessage());
             throw exception;

@@ -3,6 +3,11 @@ Ticket, Store, ScrollText} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {useEffect} from "react";
+import AdminNav from "./nav/AdminNav.jsx";
+import EventManagerNav from "./nav/EventManagerNav.jsx";
+import TicketAgentNav from "./nav/TicketAgentNav.jsx";
+import VisitorNav from "./nav/VisitorNav.jsx";
+import AuthNav from "./nav/AuthNav.jsx";
 
 export default function Header() {
     const { user, loading, fetchUser } = useAuth();
@@ -49,109 +54,11 @@ export default function Header() {
                 </Link>
 
                 <nav className="flex items-center gap-6 text-white font-medium">
-                    {isAdmin && (
-                        <Link to="/staff" className="flex items-center gap-1 hover:text-green-200 transition">
-                            <Users className="w-5 h-5" />
-                            Staff
-                        </Link>
-                    )}
-                    {isEventManager && (
-                        <>
-                            <Link to="/excursions" className="flex items-center gap-1 hover:text-green-200 transition">
-                            <Map className="w-5 h-5" />
-                            Excursions
-                        </Link>
-                        <Link to="/events" className="flex items-center gap-1 hover:text-green-200 transition">
-                        <PartyPopper className="w-5 h-5" />
-                        Events
-                        </Link>
-                        </>
-                    )}
-                    {isTicketAgent && (
-                        <>
-                            <Link to="/pricings" className="flex items-center gap-1 hover:text-green-200 transition">
-                                <Currency className="w-5 h-5" />
-                                Ticket Pricings
-                            </Link>
-                            <Link to="/tickets" className="flex items-center gap-1 hover:text-green-200 transition">
-                                <Ticket className="w-5 h-5" />
-                                Tickets
-                            </Link>
-                            <Link to="/gates" className="flex items-center gap-1 hover:text-green-200 transition">
-                                <Store className="w-5 h-5" />
-                                Gates
-                            </Link>
-                            <Link to="/visits" className="flex items-center gap-1 hover:text-green-200 transition">
-                                <ScrollText className="w-5 h-5" />
-                                Visit logs
-                            </Link>
-                        </>
-                    )}
-                    {(!isLoggedIn || isVisitor) && (
-                        <><Link
-                            to="/view/events"
-                            className="flex items-center gap-1 hover:text-green-200 transition"
-                        >
-                            <PartyPopper className="w-5 h-5" />
-                            Events
-                        </Link>
-                        <Link
-                            to="/view/excursions"
-                            className="flex items-center gap-1 hover:text-green-200 transition"
-                        >
-                            <Map className="w-5 h-5" />
-                            Excursions
-                        </Link>
-                            <Link
-                                to="/buy-ticket"
-                                className="flex items-center gap-1 hover:text-green-200 transition"
-                            >
-                                <Ticket className="w-5 h-5" />
-                                Buy Ticket
-                            </Link>
-                        <Link
-                        to="/animals"
-                        className="flex items-center gap-1 hover:text-green-200 transition"
-                    >
-                        <PawPrint className="w-5 h-5" />
-                        Animals
-                    </Link>
-                        <Link
-                        to="/about"
-                        className="flex items-center gap-1 hover:text-green-200 transition"
-                        >
-                        <Info className="w-5 h-5" />
-                        About Us
-                        </Link></>)}
-
-                    {
-                        isLoggedIn ? (
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-1 hover:text-green-200 transition"
-                            >
-                                <LogOut className="w-5 h-5"/>
-                                Logout
-                            </button>
-                        ) : (
-                            <>
-                                <Link
-                                    to="/login"
-                                    className="flex items-center gap-1 hover:text-green-200 transition"
-                                >
-                                    <LogIn className="w-5 h-5"/>
-                                    Login
-                                </Link>
-                                <Link
-                                    to="/register"
-                                    className="flex items-center gap-1 hover:text-green-200 transition"
-                                >
-                                    <UserPlus className="w-5 h-5" />
-                                    Sign Up
-                                </Link>
-                            </>
-                        
-                    )}
+                    {isAdmin && <AdminNav />}
+                    {isEventManager && <EventManagerNav />}
+                    {isTicketAgent && <TicketAgentNav />}
+                    {(!isLoggedIn || isVisitor) && <VisitorNav />}
+                    <AuthNav isLoggedIn={isLoggedIn} onLogout={handleLogout} />
                 </nav>
             </div>
         </header>

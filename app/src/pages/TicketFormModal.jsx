@@ -20,7 +20,6 @@ export default function TicketFormModal({ visitType, excursion, onClose }) {
         formState: { errors },
     } = useForm();
     const [price, setPrice] = useState(null);
-    const priceLoading = useLoading();
 
     const ticketType = watch("ticketType");
 
@@ -36,8 +35,6 @@ export default function TicketFormModal({ visitType, excursion, onClose }) {
                 },
                 errorMessage: "Failed to load ticket price",
                 navigate,
-                onStart: priceLoading.start,
-                onFinally: priceLoading.stop,
             });
         };
 
@@ -100,7 +97,7 @@ export default function TicketFormModal({ visitType, excursion, onClose }) {
         }
     };
 
-    if (loading || priceLoading.loading || isCheckoutLoading) {
+    if (loading || isCheckoutLoading) {
         return <LoadingPage/>;
     }
 
