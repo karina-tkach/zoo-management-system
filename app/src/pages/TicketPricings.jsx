@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {fetchData} from "../utils/fetch.js";
 import {useLoading} from "../utils/useLoading.jsx";
 import LoadingPage from "./LoadingPage.jsx";
+import GenericTablePage from "./GenericTablePage.jsx";
 
 export default function TicketPricings() {
     const [pricings, setPricings] = useState([]);
@@ -34,7 +35,7 @@ export default function TicketPricings() {
     };
 
     const handleSave = async () => {
-        if (isNaN(newPrice) || newPrice < 0) {
+        if (newPrice === "" || isNaN(newPrice) || newPrice < 0) {
             alert("Price must be a non-negative number");
             return;
         }
@@ -75,69 +76,29 @@ export default function TicketPricings() {
 
     return (
         <>
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800">Pricings List</h2>
-            </div>
+        <GenericTablePage
+            title="Pricings List"
+            data={pricings}
+            columns={[
+                { name: "Ticket type", value: (e) => e.ticketType },
+                { name: "Visit type", value: (e) => e.visitType },
+                { name: "Price", value: (e) => e.price },
+            ]}
+            getActions={(e) => [
+                <button
+                    key="update"
+                    onClick={() => handleUpdateClick(e.id)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
+                >
+                    Update price
+                </button>,
+            ]}
+            withPagination={false}
+            emptyMessage="No pricings found"
+        />;
 
-            <div className="overflow-x-auto border border-gray-200 rounded-md shadow-sm">
-                <table className="min-w-[1000px] divide-y divide-gray-200 w-full">
-                    <thead className="bg-gray-50">
-                    <tr className="divide-x divide-gray-200">
-                        {[
-                            "Ticket type",
-                            "Visit type",
-                            "Price",
-                            "Actions",
-                        ].map((header) => (
-                            <th
-                                key={header}
-                                className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
-                                {header}
-                            </th>
-                        ))}
-                    </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                    {pricings.length === 0 ? (
-                        <tr>
-                            <td
-                                colSpan={8}
-                                className="text-center py-4 text-gray-500 italic"
-                            >
-                                No pricings found
-                            </td>
-                        </tr>
-                    ) : (
-                        pricings.map((s) => (
-                            <tr key={s.id} className="hover:bg-gray-50 divide-x divide-gray-200">
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-900">
-                                    {s.ticketType}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.visitType}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.price}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap space-x-2">
-                                    <button
-                                        onClick={() => handleUpdateClick(s.id)}
-                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
-                                    >
-                                        Update price
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    {showModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-lg p-6 w-full max-w-sm shadow-lg">
                     <h3 className="text-lg font-semibold mb-4">Enter new price</h3>
                     <input

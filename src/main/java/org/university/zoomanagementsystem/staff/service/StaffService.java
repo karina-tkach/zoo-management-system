@@ -102,13 +102,6 @@ public class StaffService {
             if (dto.getRole().equals(Role.VISITOR)) {
                 throw new StaffValidationException("Staff can't have role 'VISITOR'");
             }
-
-            User existsUser = userService.getUserByEmail(user.getEmail());
-            if (existsUser != null) {
-                throw new UserValidationException(
-                        "User with email '" + existsUser.getEmail() + "' already exists"
-                );
-            }
             userService.updateUserWithoutPasswordChangeById(user, staffDTOToUpdate.getUserId());
 
             staffRepository.updateStaffById(staff, id);

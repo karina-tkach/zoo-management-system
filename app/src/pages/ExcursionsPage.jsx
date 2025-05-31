@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Pagination from "../components/Pagination";
 import {fetchData, deleteData} from "../utils/fetch.js";
 import {useLoading} from "../utils/useLoading.jsx";
 import LoadingPage from "./LoadingPage.jsx";
+import GenericTablePage from "./GenericTablePage.jsx";
 
 export default function ExcursionsPage() {
     const [excursions, setExcursions] = useState([]);
@@ -54,110 +54,43 @@ export default function ExcursionsPage() {
     }
 
     return (
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800">Excursions List</h2>
+        <GenericTablePage
+            title="Excursions List"
+            data={excursions}
+            columns={[
+                { name: "Guide name", value: (e) => e.guide.name },
+                { name: "Guide email", value: (e) => e.guide.email },
+                { name: "Topic", value: (e) => e.topic, isWrappable: true },
+                { name: "Description", value: (e) => e.description, isWrappable: true },
+                { name: "Date", value: (e) => e.date },
+                { name: "Start time", value: (e) => e.startTime },
+                { name: "Duration minutes", value: (e) => e.durationMinutes },
+                { name: "Max participants", value: (e) => e.maxParticipants },
+                { name: "Booked count", value: (e) => e.bookedCount },
+            ]}
+            getActions={(e) => [
                 <button
-                    onClick={() => navigate("/excursions/add")}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow"
+                    key="update"
+                    onClick={() => navigate(`/excursions/edit/${e.id}`)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
                 >
-                    Add Excursion
-                </button>
-            </div>
-
-            <div className="overflow-x-auto border border-gray-200 rounded-md shadow-sm">
-                <table className="min-w-[1000px] divide-y divide-gray-200 w-full">
-                    <thead className="bg-gray-50">
-                    <tr className="divide-x divide-gray-200">
-                        {[
-                            "Guide name",
-                            "Guide email",
-                            "Topic",
-                            "Description",
-                            "Date",
-                            "Start time",
-                            "Duration minutes",
-                            "Max participants",
-                            "Booked count",
-                            "Actions",
-                        ].map((header) => (
-                            <th
-                                key={header}
-                                className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
-                                {header}
-                            </th>
-                        ))}
-                    </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                    {excursions.length === 0 ? (
-                        <tr>
-                            <td
-                                colSpan={8}
-                                className="text-center py-4 text-gray-500 italic"
-                            >
-                                No excursions found
-                            </td>
-                        </tr>
-                    ) : (
-                        excursions.map((s) => (
-                            <tr key={s.id} className="hover:bg-gray-50 divide-x divide-gray-200">
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-900">
-                                    {s.guide.name}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.guide.email}
-                                </td>
-                                <td className="px-4 py-3 whitespace-normal break-words text-gray-700">
-                                    {s.topic}
-                                </td>
-                                <td className="px-4 py-3 whitespace-normal break-words text-gray-700">
-                                    {s.description}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.date}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.startTime}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.durationMinutes}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.maxParticipants}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">
-                                    {s.bookedCount}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap space-x-2">
-                                    <button
-                                        onClick={() => navigate(`/excursions/edit/${s.id}`)}
-                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
-                                    >
-                                        Update
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(s.id)}
-                                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
-            </div>
-
-            <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-                setCurrentPage={setPage}
-                shouldScroll={shouldScroll}
-                setShouldScroll={setShouldScroll}
-            />
-        </div>
-    );
+                    Update
+                </button>,
+                <button
+                    key="delete"
+                    onClick={() => handleDelete(e.id)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
+                >
+                    Delete
+                </button>,
+            ]}
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+            shouldScroll={shouldScroll}
+            setShouldScroll={setShouldScroll}
+            addButtonPath="/excursions/add"
+            addButtonText="Add Excursion"
+            emptyMessage="No excursions found"
+        />);
 }

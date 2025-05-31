@@ -109,6 +109,13 @@ public class UserService {
 
             validator.validateUsersForUpdate(userToUpdate, user);
 
+            User existsUser = getUserByEmail(user.getEmail());
+            if (existsUser != null) {
+                throw new UserValidationException(
+                        "User with email '" + existsUser.getEmail() + "' already exists"
+                );
+            }
+
             userRepository.updateUserWithoutPasswordChangeById(user, id);
 
             logger.info("User was updated without password change:\n{}", user);

@@ -11,7 +11,6 @@ export default function TicketAddForm() {
     const [price, setPrice] = useState(null);
     const [excursions, setExcursions] = useState([]);
     const [selectedExcursion, setSelectedExcursion] = useState(null);
-    const priceLoading = useLoading();
     const excursionLoading = useLoading();
 
     const {
@@ -44,8 +43,6 @@ export default function TicketAddForm() {
                 onSuccess: (data) => setPrice(data.price),
                 errorMessage: "Failed to load ticket price",
                 navigate,
-                onStart: priceLoading.start,
-                onFinally: priceLoading.stop,
             });
         };
 
@@ -94,7 +91,7 @@ export default function TicketAddForm() {
         });
     };
 
-    if (priceLoading.loading || excursionLoading.loading) {
+    if (excursionLoading.loading) {
         return <LoadingPage/>;
     }
 

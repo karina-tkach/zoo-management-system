@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import {fetchData, submitData} from "../utils/fetch.js";
 import {useLoading} from "../utils/useLoading.jsx";
 import LoadingPage from "./LoadingPage.jsx";
+import {GenericForm} from "./GenericForm.jsx";
 
 export default function EventForm() {
     const { id } = useParams();
@@ -89,103 +90,37 @@ export default function EventForm() {
         });
     };
 
+    const fields = [
+        { name: "title", label: "Title", type: "text", required: true },
+        { name: "description", label: "Description", type: "text", required: true },
+        { name: "date", label: "Date", type: "date", required: true },
+        { name: "startTime", label: "Start Time", type: "time", required: true },
+        {
+            name: "durationMinutes",
+            label: "Duration in minutes",
+            type: "number",
+            required: true,
+        },
+        { name: "location", label: "Location", type: "text", required: true },
+        { name: "image", label: "Image", type: "file", accept: "image/*", required: !isEdit },
+    ];
+
     if (loading) {
         return <LoadingPage/>;
     }
 
     return (
-        <div className="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6">
-            <h2 className="text-2xl font-semibold mb-6 text-center">{isEdit ? 'Update Event' : 'Add Event'}</h2>
-            {serverError && (
-                <div className="mb-4 text-red-700 bg-red-100 border border-red-300 rounded p-3 text-sm">
-                    {serverError}
-                </div>
-            )}
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" encType="multipart/form-data">
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Title</label>
-                    <input
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                        {...register('title', {required: true})}
-                    />
-                    {errors.title && <p className="text-red-500 text-sm mt-1">Title is required</p>}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Description</label>
-                    <input
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                        {...register('description', {required: true})}
-                    />
-                    {errors.description && <p className="text-red-500 text-sm mt-1">Description is required</p>}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Date</label>
-                    <input type="date"
-                           className="w-full border border-gray-300 rounded-lg px-3 py-2" {...register('date', {required: true})} />
-                    {errors.date && <p className="text-red-500 text-sm mt-1">Date is required</p>}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Start Time</label>
-                    <input type="time"
-                           className="w-full border border-gray-300 rounded-lg px-3 py-2" {...register('startTime', {required: true})} />
-                    {errors.startTime && <p className="text-red-500 text-sm mt-1">Start time is required</p>}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Duration in minutes</label>
-                    <input type="number"
-                           className="w-full border border-gray-300 rounded-lg px-3 py-2" {...register('durationMinutes', {required: true})} />
-                    {errors.durationMinutes && <p className="text-red-500 text-sm mt-1">Duration is required</p>}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Location</label>
-                    <input
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2" {...register('location', {required: true})} />
-                    {errors.location &&
-                        <p className="text-red-500 text-sm mt-1">Location is required</p>}
-                </div>
-
-                {isEdit && (<div className="mt-6 text-sm text-gray-600">
-                    Leave empty to keep current image
-                </div>)}
-
-                <div>
-                    <label className="block text-sm font-medium mb-1">Image</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        {...register('image', {
-                            required: !isEdit ? 'Image is required' : false
-                        })}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    />
-                    {errors.image && (
-                        <p className="text-red-500 text-sm mt-1">{errors.image.message}</p>
-                    )}
-                </div>
-
-
-                <div className="flex justify-between items-center mt-6">
-                    <button
-                        type="submit"
-                        className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
-                    >
-                        {isEdit ? 'Update' : 'Add'}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => navigate('/events')}
-                        className="bg-gray-300 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-400 transition"
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </form>
-        </div>
+        <GenericForm
+            fields={fields}
+            isEdit={isEdit}
+            entityName="Event"
+            onSubmit={onSubmit}
+            cancelPath="/events"
+            serverError={serverError}
+            register={register}
+            handleSubmit={handleSubmit}
+            errors={errors}
+            multipart={true}
+        />
     );
 }

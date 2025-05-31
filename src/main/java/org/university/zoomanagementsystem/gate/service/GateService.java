@@ -72,7 +72,7 @@ public class GateService {
 
             gateValidator.validateGateForUpdate(gateToUpdate, gate);
             Gate existsGate = gateRepository.getGateByName(gate.getName());
-            if (existsGate != null) {
+            if (!gate.getName().equals(gateToUpdate.getName()) && existsGate != null) {
                 throw new GateValidationException("Gate with such name already exists");
             }
             gateRepository.updateGateById(gate, id);

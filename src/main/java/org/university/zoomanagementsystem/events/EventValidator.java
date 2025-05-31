@@ -109,7 +109,7 @@ public class EventValidator {
         if (image.length() > 255) {
             throw new EventValidationException("Event image length must be less than or equal to 255");
         }
-        if (!image.matches("[a-zA-Z0-9._-]+\\.(jpg|jpeg|png|gif)$")) {
+        if (!image.matches("[a-zA-Z0-9._()-]+\\.(jpg|jpeg|png|gif)$")) {
             throw new EventValidationException("Event image must be a valid image file (jpg, jpeg, png, gif)");
         }
     }

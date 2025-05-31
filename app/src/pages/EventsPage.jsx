@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Pagination from "../components/Pagination";
 import {deleteData, fetchData} from "../utils/fetch.js";
 import {useLoading} from "../utils/useLoading.jsx";
 import LoadingPage from "./LoadingPage.jsx";
+import GenericTablePage from "./GenericTablePage.jsx";
 
 export default function EventsPage() {
     const [events, setEvents] = useState([]);
@@ -52,92 +52,51 @@ export default function EventsPage() {
     }
 
     return (
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 scroll-target">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800">Events List</h2>
+        <GenericTablePage
+            title="Events List"
+            data={events}
+            columns={[
+                { name: "Title", value: (e) => e.title, isWrappable: true },
+                { name: "Description", value: (e) => e.description, isWrappable: true },
+                { name: "Date", value: (e) => e.date },
+                { name: "Start Time", value: (e) => e.startTime },
+                { name: "Duration (min)", value: (e) => e.durationMinutes },
+                { name: "Location", value: (e) => e.location },
+                {
+                    name: "Image",
+                    value: (e) => (
+                        <img
+                            src={`/${e.image}`}
+                            alt={e.title}
+                            className="w-[190px] h-[120px] object-cover rounded-md border"
+                            onError={(err) => (err.currentTarget.style.display = "none")}
+                        />
+                    ),
+                },
+            ]}
+            getActions={(e) => [
                 <button
-                    onClick={() => navigate("/events/add")}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow"
+                    key="update"
+                    onClick={() => navigate(`/events/edit/${e.id}`)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
                 >
-                    Add Event
-                </button>
-            </div>
-
-            <div className="overflow-x-auto border border-gray-200 rounded-md shadow-sm">
-                <table className="min-w-[1000px] divide-y divide-gray-200 w-full">
-                    <thead className="bg-gray-50">
-                    <tr className="divide-x divide-gray-200">
-                        {[
-                            "Title",
-                            "Description",
-                            "Date",
-                            "Start Time",
-                            "Duration (min)",
-                            "Location",
-                            "Image",
-                            "Actions",
-                        ].map((header) => (
-                            <th
-                                key={header}
-                                className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
-                                {header}
-                            </th>
-                        ))}
-                    </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                    {events.length === 0 ? (
-                        <tr>
-                            <td colSpan={8} className="text-center py-4 text-gray-500 italic">
-                                No events found
-                            </td>
-                        </tr>
-                    ) : (
-                        events.map((event) => (
-                            <tr key={event.id} className="hover:bg-gray-50 divide-x divide-gray-200">
-                                <td className="px-4 py-3 whitespace-normal break-words text-gray-900">{event.title}</td>
-                                <td className="px-4 py-3 text-gray-700 whitespace-normal break-words">{event.description}</td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">{event.date}</td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">{event.startTime}</td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">{event.durationMinutes}</td>
-                                <td className="px-4 py-3 whitespace-nowrap text-gray-700">{event.location}</td>
-                                <td className="px-4 py-3">
-                                    <img
-                                        src={`/${event.image}`}
-                                        alt={event.title}
-                                        className="w-[190px] h-[120px] object-cover rounded-md border"
-                                        onError={(e) => (e.target.style.display = 'none')}
-                                    />
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap space-x-2">
-                                    <button
-                                        onClick={() => navigate(`/events/edit/${event.id}`)}
-                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
-                                    >
-                                        Update
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(event.id)}
-                                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
-            </div>
-
-            <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-                setCurrentPage={setPage}
-                shouldScroll={shouldScroll}
-                setShouldScroll={setShouldScroll}
-            />
-        </div>
-    );
+                    Update
+                </button>,
+                <button
+                    key="delete"
+                    onClick={() => handleDelete(e.id)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
+                >
+                    Delete
+                </button>,
+            ]}
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+            shouldScroll={shouldScroll}
+            setShouldScroll={setShouldScroll}
+            addButtonPath="/events/add"
+            addButtonText="Add Event"
+            emptyMessage="No events found"
+        />);
 }
