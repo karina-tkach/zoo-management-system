@@ -133,7 +133,7 @@ public class StaffService {
 
     public List<StaffDTO> getStaffWithPagination(int pageNumber, int limit) {
         try {
-            if (pageNumber < 0 || limit < 0) {
+            if (pageNumber <= 0 || limit <= 0) {
                 throw new ValidationException("Page number and limit must be greater than 0");
             }
             logger.info("Try to get staff with pagination");

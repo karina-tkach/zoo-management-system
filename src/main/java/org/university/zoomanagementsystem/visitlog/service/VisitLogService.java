@@ -81,7 +81,7 @@ public class VisitLogService {
 
     public List<VisitLog> getVisitLogsWithPagination(int pageNumber, int limit) {
         try {
-            if (pageNumber < 0 || limit < 0) {
+            if (pageNumber <= 0 || limit <= 0) {
                 throw new ValidationException("Page number and limit must be greater than 0");
             }
             logger.info("Try to get visit logs with pagination");

@@ -66,10 +66,10 @@ const Pagination = ({
 
                 <button
                     onClick={() => {
-                        setCurrentPage(Math.min(currentPage + 1, totalPages));
+                        setCurrentPage(Math.min(currentPage + 1, (totalPages > 0 ? totalPages : 1)));
                         setShouldScroll(true);
                     }}
-                    disabled={currentPage === totalPages}
+                    disabled={totalPages === 0 || currentPage === totalPages}
                     className="px-3 py-1 text-black hover:bg-gray-100 rounded-lg flex items-center disabled:opacity-50"
                 >
                     Next →

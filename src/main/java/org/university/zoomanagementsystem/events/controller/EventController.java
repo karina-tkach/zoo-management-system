@@ -64,7 +64,7 @@ public class EventController {
 
     @PreAuthorize("hasAuthority('EVENT_MANAGER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStaff(@PathVariable int id) {
+    public ResponseEntity<?> deleteEvent(@PathVariable int id) {
         eventService.deleteEventById(id);
         return ResponseEntity.ok(Map.of("message", String.format("Event with id %d was successfully deleted", id)));
     }

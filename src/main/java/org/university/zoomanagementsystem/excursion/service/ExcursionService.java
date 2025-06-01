@@ -119,7 +119,7 @@ public class ExcursionService {
 
     public List<Excursion> getExcursionsWithPagination(int pageNumber, int limit) {
         try {
-            if (pageNumber < 0 || limit < 0) {
+            if (pageNumber <= 0 || limit <= 0) {
                 throw new ValidationException("Page number and limit must be greater than 0");
             }
             logger.info("Try to get excursions with pagination");
@@ -146,7 +146,7 @@ public class ExcursionService {
 
     public List<Excursion> getExcursionsByGuideWithPagination(int guideId, int pageNumber, int limit) {
         try {
-            if (pageNumber < 0 || limit < 0) {
+            if (pageNumber <= 0 || limit <= 0) {
                 throw new ValidationException("Page number and limit must be greater than 0");
             }
             logger.info("Try to get excursions by guide with pagination");
