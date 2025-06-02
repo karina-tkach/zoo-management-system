@@ -15,7 +15,7 @@ export default function GenericTablePage({
                                              addButtonPath,
                                              addButtonText = "Add",
                                              emptyMessage = "No records found",
-                                             searchBarComponent = null,
+                                             component = null,
                                          }) {
     const navigate = useNavigate();
     const hasActions = data.some(row => getActions(row).length > 0);
@@ -34,9 +34,9 @@ export default function GenericTablePage({
                 )}
             </div>
 
-            {searchBarComponent && (
+            {component && (
                 <div className="mb-4">
-                    {searchBarComponent}
+                    {component}
                 </div>
             )}
 

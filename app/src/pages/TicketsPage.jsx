@@ -88,7 +88,7 @@ export default function TicketsPage() {
             addButtonPath="/tickets/add"
             addButtonText="Add Offline Ticket"
             emptyMessage="No tickets found"
-            searchBarComponent={
+            component={
                 <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
             }
         />
