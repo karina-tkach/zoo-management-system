@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import Pagination from "../components/Pagination";
 import EventCard from "../components/EventCard";
 import {fetchData} from "../utils/fetch.js";

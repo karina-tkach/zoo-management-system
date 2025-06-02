@@ -16,7 +16,7 @@ export default function VisitorNav() {
                 <Ticket className="w-5 h-5" />
                 Buy Ticket
             </Link>
-            <Link to="/animals" className="flex items-center gap-1 hover:text-green-200 transition">
+            <Link to="/view/animals" className="flex items-center gap-1 hover:text-green-200 transition">
                 <PawPrint className="w-5 h-5" />
                 Animals
             </Link>
