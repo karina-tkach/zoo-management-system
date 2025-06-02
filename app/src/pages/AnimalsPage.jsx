@@ -28,6 +28,8 @@ export default function AnimalsPage() {
                 url = `/api/animals/by-habitat?habitat=${filterValue}&page=${page}&pageSize=${pageSize}`;
             } else if (filterType === "healthStatus" && filterValue) {
                 url = `/api/animals/by-health?healthStatus=${filterValue}&page=${page}&pageSize=${pageSize}`;
+            } else if (filterType !== "all") {
+                return;
             }
             await fetchData({
                 url: url,

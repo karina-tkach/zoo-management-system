@@ -1,4 +1,5 @@
 import React from "react";
+import {useAuth} from "../context/AuthContext.jsx";
 
 const filterOptions = {
     group: ["INVERTEBRATES", "FISH", "AMPHIBIANS", "REPTILES", "BIRDS", "MAMMALS"],
@@ -11,6 +12,8 @@ export default function AnimalFilter({
                                          filterValue,
                                          onFilterChange
                                      }) {
+    const { user } = useAuth();
+    const isAdmin = user?.roles.includes("ADMIN");
 
     const handleTypeChange = (e) => {
         const type = e.target.value;
@@ -30,7 +33,7 @@ export default function AnimalFilter({
                     <option value="all">All</option>
                     <option value="group">Animal Group</option>
                     <option value="habitat">Habitat Type</option>
-                    <option value="healthStatus">Health Status</option>
+                    {isAdmin && <option value="healthStatus">Health Status</option>}
                 </select>
             </div>
 

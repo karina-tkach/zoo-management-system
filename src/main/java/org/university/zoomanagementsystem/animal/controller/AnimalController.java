@@ -42,6 +42,7 @@ public class AnimalController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("by-enclosure/{id}")
     public ResponseEntity<Map<String, Object>> getAllAnimalsByEnclosure(
             @PathVariable int id,
@@ -96,6 +97,7 @@ public class AnimalController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/by-health")
     public ResponseEntity<Map<String, Object>> getAllAnimalsByHealthStatus(
             @RequestParam("healthStatus") HealthStatus healthStatus,

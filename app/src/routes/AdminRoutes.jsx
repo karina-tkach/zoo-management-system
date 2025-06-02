@@ -6,6 +6,8 @@ import EnclosuresPage from "../pages/EnclosuresPage.jsx";
 import EnclosureForm from "../pages/EnclosureForm.jsx";
 import EnclosureAnimalsPage from "../pages/EnclosureAnimalsPage.jsx";
 import AnimalsPage from "../pages/AnimalsPage.jsx";
+import AnimalForm from "../pages/AnimalForm.jsx";
+import AnimalDetailsPage from "../pages/AnimalDetailsPage.jsx";
 
 const AdminRoutes = [
     <Route path="/staff" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
@@ -34,7 +36,7 @@ const AdminRoutes = [
     <Route path="/animals" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
         <AnimalsPage/>
     </ProtectedRoute>}/>,
-    /*<Route path="/animals/add" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+    <Route path="/animals/add" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
         <AnimalForm/>
     </ProtectedRoute>}/>,
     <Route path="/animals/edit/:id" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
@@ -42,7 +44,7 @@ const AdminRoutes = [
     </ProtectedRoute>}/>,
     <Route path="/animals/:id" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
         <AnimalDetailsPage/>
-    </ProtectedRoute>}/>,*/
+    </ProtectedRoute>}/>,
 
 ];
 

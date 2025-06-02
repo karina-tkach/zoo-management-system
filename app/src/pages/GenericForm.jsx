@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import React from "react";
+import React, {useEffect} from "react";
 
 export function GenericForm({
                                 fields,
@@ -15,8 +15,15 @@ export function GenericForm({
                             }) {
     const navigate = useNavigate();
 
+    useEffect(() => {
+            const targetSection = document.querySelector(".scroll-target");
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: "smooth" });
+            }
+    }, [serverError]);
+
     return (
-        <div className="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6">
+        <div className="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6 scroll-target">
             <h2 className="text-2xl font-semibold mb-6 text-center">
                 {isEdit ? `Update ${entityName}` : `Add ${entityName}`}
             </h2>
