@@ -6,6 +6,7 @@ import AdminRoutes from "./routes/AdminRoutes.jsx";
 import TicketAgentRoutes from "./routes/TicketAgentRoutes.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import GuideRoutes from "./routes/GuideRoutes.jsx";
+import CaretakerRoutes from "./routes/CaretakerRoutes.jsx";
 
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
                 {EventManagerRoutes}
                 {TicketAgentRoutes}
                 {GuideRoutes}
+                {CaretakerRoutes}
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </>

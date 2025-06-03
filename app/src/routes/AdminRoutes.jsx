@@ -8,6 +8,10 @@ import EnclosureAnimalsPage from "../pages/EnclosureAnimalsPage.jsx";
 import AnimalsPage from "../pages/AnimalsPage.jsx";
 import AnimalForm from "../pages/AnimalForm.jsx";
 import AnimalDetailsPage from "../pages/AnimalDetailsPage.jsx";
+import FeedingsPage from "../pages/FeedingsPage.jsx";
+import FeedingForm from "../pages/FeedingsForm.jsx";
+import FeedingRecordsPage from "../pages/FeedingRecordsPage.jsx";
+import AnimalFeedingsPage from "../pages/AnimalFeedingsPage.jsx";
 
 const AdminRoutes = [
     <Route path="/staff" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
@@ -44,6 +48,23 @@ const AdminRoutes = [
     </ProtectedRoute>}/>,
     <Route path="/animals/:id" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
         <AnimalDetailsPage/>
+    </ProtectedRoute>}/>,
+
+    <Route path="/feedings" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+        <FeedingsPage/>
+    </ProtectedRoute>}/>,
+    <Route path="/feedings/add" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+        <FeedingForm/>
+    </ProtectedRoute>}/>,
+    <Route path="/feedings/edit/:id" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+        <FeedingForm/>
+    </ProtectedRoute>}/>,
+    <Route path="/animals/feedings/:id" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+        <AnimalFeedingsPage/>
+    </ProtectedRoute>}/>,
+    //medical
+    <Route path="/feeding-records" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+        <FeedingRecordsPage/>
     </ProtectedRoute>}/>,
 
 ];
