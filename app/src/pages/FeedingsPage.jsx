@@ -4,7 +4,7 @@ import {deleteData, fetchData} from "../utils/fetch.js";
 import {useLoading} from "../utils/useLoading.jsx";
 import LoadingPage from "./LoadingPage.jsx";
 import GenericTablePage from "./GenericTablePage.jsx";
-import AnimalFilter from "../components/AnimalFilter.jsx";
+import FeedingScheduleFilter from "../components/FeedingScheduleFilter.jsx";
 
 export default function FeedingsPage() {
     const [feedings, setFeedings] = useState([]);
@@ -33,7 +33,7 @@ export default function FeedingsPage() {
                     setFeedings(data?.data || []);
                     setTotalPages(data?.totalPages || 1);
                 },
-                errorMessage: "Failed to load animals data",
+                errorMessage: "Failed to load feedings data",
                 navigate,
                 onStart: start,
                 onFinally: stop,
@@ -98,28 +98,30 @@ export default function FeedingsPage() {
                             onError={(err) => (err.currentTarget.style.display = "none")}
                         />
                     ),},
-                { name: "Last Fed Up At", value: (e) => e.animal.lastFedUpAt.slice(0, 16) },
-                { name: "Caretaker", value: (e) => `${e.caretaker.name} | ${e.caretaker.email}}`, isWrappable: true },
-                { name: "Food type", value: (e) => e.foodType },
+                { name: "Last Fed Up At", value: (e) => e.animal.lastFedUpAt.slice(0, 16).replace("T", " "), isWrappable: true },
+                { name: "Caretaker", value: (e) => `${e.caretaker.name} | ${e.caretaker.email}`, isWrappable: true },
+                { name: "Food type", value: (e) => e.foodType, isWrappable: true },
                 { name: "Feeding time", value: (e) => e.time },
                 { name: "Portion size (grams)", value: (e) => e.portionSizeGrams },
-                { name: "Is fed today", value: (e) => e.doneToday ? "Yes" : "No" },
+                { name: "Is done today", value: (e) => e.doneToday ? "Yes" : "No" },
             ]}
             getActions={(e) => [
+                <div className="flex flex-col gap-5">
                 <button
                     key="update"
                     onClick={() => navigate(`/feedings/edit/${e.id}`)}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
                 >
                     Update
-                </button>,
+                </button>
                 <button
                     key="delete"
                     onClick={() => handleDelete(e.id)}
                     className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
                 >
                     Delete
-                </button>,
+                </button>
+                </div>,
             ]}
             page={page}
             setPage={setPage}
@@ -129,10 +131,10 @@ export default function FeedingsPage() {
             addButtonPath="/feedings/add"
             addButtonText="Add Feeding Schedule"
             emptyMessage="No feedings found"
-            /*component={<AnimalFilter
+            component={<FeedingScheduleFilter
                 filterType={filterType}
                 filterValue={filterValue}
                 onFilterChange={handleFilterChange}
-            />}*/
+            />}
         />);
 }

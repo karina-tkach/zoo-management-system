@@ -241,6 +241,22 @@ public class AnimalService {
         }
     }
 
+    public List<Animal> getAllAnimalsByHabitat(HabitatType habitatType) {
+        try {
+            if (habitatType == null) {
+                throw new ValidationException("Habitat type is null");
+            }
+
+            logger.info("Try to get all animals by habitat");
+            List<Animal> animals = animalRepository.getAnimalsByHabitat(habitatType);
+            logger.info("All animals by habitat were fetched successfully");
+            return animals;
+        } catch (ValidationException | DataAccessException exception) {
+            logger.warn("All animals by habitat weren't fetched\n{}", exception.getMessage());
+            throw exception;
+        }
+    }
+
     public List<Animal> getAnimalsByHealthStatusWithPagination(HealthStatus healthStatus, int pageNumber, int limit) {
         try {
             if (pageNumber <= 0 || limit <= 0) {

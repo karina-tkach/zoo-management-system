@@ -128,7 +128,7 @@ export default function AnimalDetailsPage() {
                                         View Medical Records
                                     </button>
                                     <button
-                                        onClick={() => navigate(`/animals/feedings/${e.id}`)}
+                                        onClick={() => navigate(`/animals/feedings/${animal.id}`)}
                                         className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-lg font-semibold"
                                     >
                                         View Feeding

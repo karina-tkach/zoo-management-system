@@ -98,6 +98,16 @@ public class AnimalController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/all/by-habitat")
+    public ResponseEntity<List<Animal>> getAnimalsByHabitat(
+            @RequestParam("habitat") HabitatType habitatType) {
+
+        List<Animal> animalList = animalService.getAllAnimalsByHabitat(habitatType);
+
+        return ResponseEntity.ok(animalList);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/by-health")
     public ResponseEntity<Map<String, Object>> getAllAnimalsByHealthStatus(
             @RequestParam("healthStatus") HealthStatus healthStatus,

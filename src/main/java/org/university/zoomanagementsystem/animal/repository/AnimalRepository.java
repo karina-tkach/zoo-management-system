@@ -31,6 +31,8 @@ public interface AnimalRepository {
 
     List<Animal> getAnimalsByHabitatWithPagination(HabitatType habitatType, int pageNumber, int limit);
 
+    List<Animal> getAnimalsByHabitat(HabitatType habitatType);
+
     int getAnimalsByHabitatRowsCount(HabitatType habitatType);
 
     List<Animal> getAnimalsByHealthStatusWithPagination(HealthStatus healthStatus, int pageNumber, int limit);

@@ -203,6 +203,21 @@ public class AnimalRepositoryImpl implements AnimalRepository {
     }
 
     @Override
+    public List<Animal> getAnimalsByHabitat(HabitatType habitatType) {
+        String query = """
+        SELECT a.*, e.name AS enclosure_name, e.location, e.area_m2
+        FROM animals a
+        JOIN enclosures e ON a.enclosure_id = e.id
+        WHERE a.habitat_type=:habitat_type
+        ORDER BY a.id
+        """;
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("habitat_type", habitatType, Types.OTHER);
+
+        return jdbcTemplate.query(query, parameters, AnimalMapper::mapToPojo);
+    }
+
+    @Override
     public int getAnimalsByHabitatRowsCount(HabitatType habitatType) {
         String query = "SELECT COUNT(*) FROM animals WHERE habitat_type = :habitat_type";
         SqlParameterSource parameters = new MapSqlParameterSource()
