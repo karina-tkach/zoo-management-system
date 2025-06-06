@@ -14,5 +14,4 @@ public interface FeedingRecordRepository {
 
     int getFeedingRecordsByDateRowsCount(LocalDate date);
 
-
 }

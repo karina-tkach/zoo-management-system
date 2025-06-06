@@ -1,12 +1,9 @@
 package org.university.zoomanagementsystem.stripe.controller;
 
-import com.stripe.Stripe;
 import com.stripe.exception.EventDataObjectDeserializationException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
-import com.stripe.model.EventDataObjectDeserializer;
-import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import jakarta.mail.MessagingException;
@@ -26,6 +23,7 @@ import org.university.zoomanagementsystem.ticket.VisitType;
 import org.university.zoomanagementsystem.ticket.service.TicketService;
 import org.university.zoomanagementsystem.ticket.Ticket;
 
+//stripe listen --forward-to localhost:8080/api/stripe/webhook
 @RestController
 @RequestMapping("/api/stripe")
 public class StripeController {

@@ -128,7 +128,7 @@ public class FeedingScheduleService {
 
             FeedingSchedule feedingScheduleExistsByCaretaker = feedingScheduleRepository.getFeedingScheduleByCaretakerAndTime(caretaker.getId(), feedingSchedule.getTime());
 
-            if (feedingScheduleExists != null && feedingScheduleExistsByCaretaker.getId() != id) {
+            if (feedingScheduleExistsByCaretaker != null && feedingScheduleExistsByCaretaker.getId() != id) {
                 throw new FeedingScheduleValidationException("Cannot add feeding schedule as schedule for this caretaker and time already exists (change one of them)");
             }
 

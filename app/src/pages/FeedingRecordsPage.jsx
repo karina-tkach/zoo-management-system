@@ -33,7 +33,7 @@ export default function FeedingRecordsPage() {
                     setRecords(data?.data || []);
                     setTotalPages(data?.totalPages || 1);
                 },
-                errorMessage: "Failed to load feedings data",
+                errorMessage: "Failed to load feeding records data",
                 navigate,
                 onStart: start,
                 onFinally: stop,
