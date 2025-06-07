@@ -23,14 +23,14 @@ WHERE id = NEW.examination_id;
 -- Update animal health and exam status
 UPDATE animals
 SET health_status = CASE
-                        WHEN NEW.diagnosis IS NULL OR TRIM(NEW.diagnosis) = '' THEN 'HEALTHY'
-                        ELSE 'SICK'
+                        WHEN NEW.diagnosis IS NULL OR TRIM(NEW.diagnosis) = '' THEN 'HEALTHY'::health_status_enum
+                        ELSE 'SICK'::health_status_enum
     END,
     last_checked_up_at = NOW()
 WHERE id = a_id;
 
 UPDATE vet_examination_schedules
-SET status = 'COMPLETED'
+SET status = 'COMPLETED'::examination_status_enum
 WHERE id = NEW.examination_id;
 
 -- Try to insert follow-up exam if diagnosis exists
@@ -41,7 +41,7 @@ BEGIN
 INSERT INTO vet_examination_schedules (
     animal_id, vet_id, planned_datetime, reason, status
 ) VALUES (
-             a_id, v_id, next_exam_time, 'Follow-up after diagnosis', 'PLANNED'
+             a_id, v_id, next_exam_time, 'Follow-up after diagnosis', 'PLANNED'::examination_status_enum
          );
 EXIT;
 EXCEPTION WHEN unique_violation THEN

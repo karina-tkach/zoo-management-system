@@ -31,7 +31,7 @@ public class FeedingRecordRepositoryImpl implements FeedingRecordRepository {
         JOIN animals a ON fs.animal_id = a.id
         JOIN enclosures e ON a.enclosure_id = e.id
         JOIN users u ON fs.caretaker_id = u.id
-        ORDER BY fr.date DESC
+        ORDER BY fr.date DESC, fs.time DESC
         LIMIT :limit
         OFFSET :offset
         """;

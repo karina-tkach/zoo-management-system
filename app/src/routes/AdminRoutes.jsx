@@ -12,6 +12,10 @@ import FeedingsPage from "../pages/FeedingsPage.jsx";
 import FeedingForm from "../pages/FeedingsForm.jsx";
 import FeedingRecordsPage from "../pages/FeedingRecordsPage.jsx";
 import AnimalFeedingsPage from "../pages/AnimalFeedingsPage.jsx";
+import MedicalRecordsPage from "../pages/MedicalRecordsPage.jsx";
+import ExaminationsPage from "../pages/ExaminationsPage.jsx";
+import AnimalExaminationsPage from "../pages/AnimalExaminationsPage.jsx";
+import ExaminationsForm from "../pages/ExaminationsForm.jsx";
 
 const AdminRoutes = [
     <Route path="/staff" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
@@ -62,9 +66,25 @@ const AdminRoutes = [
     <Route path="/animals/feedings/:id" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
         <AnimalFeedingsPage/>
     </ProtectedRoute>}/>,
-    //medical
     <Route path="/feeding-records" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
         <FeedingRecordsPage/>
+    </ProtectedRoute>}/>,
+
+    <Route path="/examinations" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+        <ExaminationsPage/>
+    </ProtectedRoute>}/>,
+    <Route path="/animals/examinations/:id" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+        <AnimalExaminationsPage/>
+    </ProtectedRoute>}/>,
+    <Route path="/examinations/add" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+        <ExaminationsForm/>
+    </ProtectedRoute>}/>,
+    <Route path="/examinations/edit/:id" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+        <ExaminationsForm/>
+    </ProtectedRoute>}/>,
+
+    <Route path="/medical-records" element={<ProtectedRoute requiredRoles={["ADMIN"]}>
+        <MedicalRecordsPage/>
     </ProtectedRoute>}/>,
 
 ];

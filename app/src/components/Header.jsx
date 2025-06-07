@@ -9,6 +9,7 @@ import VisitorNav from "./nav/VisitorNav.jsx";
 import AuthNav from "./nav/AuthNav.jsx";
 import GuideNav from "./nav/GuideNav.jsx";
 import CaretakerNav from "./nav/CaretakerNav.jsx";
+import VeterinarianNav from "./nav/VeterinarianNav.jsx";
 
 export default function Header() {
     const { user, loading, fetchUser } = useAuth();
@@ -20,6 +21,7 @@ export default function Header() {
     const isTicketAgent = user?.roles.includes("TICKET_AGENT");
     const isGuide = user?.roles.includes("GUIDE");
     const isCaretaker = user?.roles.includes("CARETAKER");
+    const isVeterenarian = user?.roles.includes("VETERINARIAN");
 
     useEffect(() => {
         fetchUser();
@@ -62,6 +64,7 @@ export default function Header() {
                     {isTicketAgent && <TicketAgentNav />}
                     {isGuide && <GuideNav />}
                     {isCaretaker && <CaretakerNav />}
+                    {isVeterenarian && <VeterinarianNav />}
                     {(!isLoggedIn || isVisitor) && <VisitorNav />}
                     <AuthNav isLoggedIn={isLoggedIn} onLogout={handleLogout} />
                 </nav>

@@ -114,7 +114,7 @@ public class ExaminationScheduleRepositoryImpl implements ExaminationScheduleRep
                 JOIN animals a ON es.animal_id = a.id
                 JOIN enclosures e ON a.enclosure_id = e.id
                 JOIN users u ON es.vet_id = u.id
-                ORDER BY es.planned_datetime
+                ORDER BY es.status, es.planned_datetime
                 LIMIT :limit
                 OFFSET :offset
         """;
@@ -187,7 +187,7 @@ public class ExaminationScheduleRepositoryImpl implements ExaminationScheduleRep
                 JOIN enclosures e ON a.enclosure_id = e.id
                 JOIN users u ON es.vet_id = u.id
                 WHERE es.animal_id=:animal_id
-                ORDER BY es.planned_datetime
+                ORDER BY es.status, es.planned_datetime
                 LIMIT :limit
                 OFFSET :offset
         """;
@@ -219,7 +219,7 @@ public class ExaminationScheduleRepositoryImpl implements ExaminationScheduleRep
                 JOIN enclosures e ON a.enclosure_id = e.id
                 JOIN users u ON es.vet_id = u.id
                 WHERE es.vet_id=:vet_id
-                ORDER BY es.planned_datetime
+                ORDER BY es.status, es.planned_datetime
                 LIMIT :limit
                 OFFSET :offset
         """;

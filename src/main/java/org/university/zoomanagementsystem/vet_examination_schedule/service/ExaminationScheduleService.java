@@ -39,7 +39,7 @@ public class ExaminationScheduleService {
         this.userService = userService;
     }
 
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 0 8 * * MON,THU,SUN")
     public void markAnimalsNeedingCheckup() {
         try {
             logger.info("Try to mark animals needing checkup and set examination to them");
@@ -109,6 +109,9 @@ public class ExaminationScheduleService {
         try {
             ExaminationSchedule examinationScheduleToUpdate = getExaminationScheduleById(id);
             logger.info("Try to update examination schedule");
+            if (examinationSchedule.getStatus().equals(ExaminationStatus.COMPLETED)) {
+                throw new ExaminationScheduleValidationException("Cannot update examination schedule as it is already completed");
+            }
 
             examinationScheduleValidator.validateExaminationScheduleForUpdate(examinationScheduleToUpdate, examinationSchedule);
 

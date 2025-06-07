@@ -123,9 +123,10 @@ export default function AnimalDetailsPage() {
                                 </p>
                                 <div className="flex justify-center gap-3 pt-10">
                                     <button
+                                        onClick={() => navigate(`/animals/examinations/${animal.id}`)}
                                         className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-lg font-semibold"
                                     >
-                                        View Medical Records
+                                        View Vet Examinations
                                     </button>
                                     <button
                                         onClick={() => navigate(`/animals/feedings/${animal.id}`)}

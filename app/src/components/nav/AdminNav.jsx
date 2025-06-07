@@ -1,9 +1,10 @@
 import {Link} from "react-router-dom";
-import {Users, Tent, PawPrint, Utensils, Captions} from "lucide-react";
+import {Users, Tent, PawPrint, Utensils, Captions, Stethoscope, BookX} from "lucide-react";
 
 export default function AdminNav() {
     return (
         <>
+            <div className="w-[2px] h-6 bg-white"></div>
             <Link to="/staff" className="flex items-center gap-1 hover:text-green-200 transition">
                 <Users className="w-5 h-5"/>
                 Staff
@@ -23,6 +24,14 @@ export default function AdminNav() {
             <Link to="/feeding-records" className="flex items-center gap-1 hover:text-green-200 transition">
                 <Captions className="w-5 h-5"/>
                 Feeding records
+            </Link>
+            <Link to="/examinations" className="flex items-center gap-1 hover:text-green-200 transition">
+                <Stethoscope className="w-5 h-5"/>
+                Vet examination schedules
+            </Link>
+            <Link to="/medical-records" className="flex items-center gap-1 hover:text-green-200 transition">
+                <BookX className="w-5 h-5"/>
+                Medical records
             </Link>
         </>
     );

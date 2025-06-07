@@ -6,6 +6,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface MedicalRecordRepository {
+    int addMedicalRecord(MedicalRecord medicalRecord);
+
+    MedicalRecord getMedicalRecordById(int id);
+
     List<MedicalRecord> getMedicalRecordsWithPagination(int pageNumber, int limit);
 
     int getMedicalRecordsRowsCount();
@@ -13,4 +17,8 @@ public interface MedicalRecordRepository {
     List<MedicalRecord> getMedicalRecordsByDateWithPagination(LocalDate date, int pageNumber, int limit);
 
     int getMedicalRecordsByDateRowsCount(LocalDate date);
+
+    List<MedicalRecord> getMedicalRecordsByVeterinarianWithPagination(int veterinarianId, int pageNumber, int limit);
+
+    int getMedicalRecordsByVeterinarianRowsCount(int veterinarianId);
 }

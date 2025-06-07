@@ -1,0 +1,91 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {fetchData} from "../utils/fetch.js";
+import {useLoading} from "../utils/useLoading.jsx";
+import LoadingPage from "./LoadingPage.jsx";
+import GenericTablePage from "./GenericTablePage.jsx";
+import MedicalRecordFormModal from "./MedicalRecordFormModal.jsx";
+
+export default function VetExaminationsPage() {
+    const [examinations, setExaminations] = useState([]);
+    const [page, setPage] = useState(1);
+    const [pageSize] = useState(5);
+    const [totalPages, setTotalPages] = useState(1);
+    const [shouldScroll, setShouldScroll] = useState(false);
+    const navigate = useNavigate();
+    const { loading, start, stop } = useLoading();
+    const [selectedExamination, setSelectedExamination] = useState(null);
+
+
+    useEffect(() => {
+        const fetchExaminations = async () => {
+            await fetchData({
+                url: `/api/examination-schedules/veterinarian?page=${page}&pageSize=${pageSize}`,
+                onSuccess: (data) => {
+                    setExaminations(data?.data || []);
+                    setTotalPages(data?.totalPages || 1);
+                },
+                errorMessage: "Failed to load vet examinations data",
+                navigate,
+                onStart: start,
+                onFinally: stop,
+            });
+        };
+
+        fetchExaminations();
+    }, [page, pageSize, navigate, selectedExamination]);
+
+    if (loading) {
+        return <LoadingPage/>;
+    }
+
+    return (
+        <>
+        <GenericTablePage
+            title="My Examination Schedules List"
+            data={examinations}
+            columns={[
+                { name: "Animal name", value: (e) => e.animal.name },
+                { name: "Animal habitat type", value: (e) => e.animal.habitatType },
+                { name: "Enclosure", value: (e) => `${e.animal.enclosure.name} | ${e.animal.enclosure.location} | ${e.animal.enclosure.areaM2}`, isWrappable: true },
+                { name: "Animal health status", value: (e) => e.animal.healthStatus },
+                { name: "Image", value: (e) => (
+                        <img
+                            src={`/${e.animal.image}`}
+                            alt={e.animal.name}
+                            className="w-[190px] h-[120px] object-cover rounded-md border"
+                            onError={(err) => (err.currentTarget.style.display = "none")}
+                        />
+                    ),},
+                { name: "Last Checked Up At", value: (e) => e.animal.lastCheckedUpAt.slice(0, 16).replace("T", " "), isWrappable: true },
+                { name: "Planned time", value: (e) => e.plannedDateTime.slice(0, 16).replace("T", " "), isWrappable: true },
+                { name: "Reason", value: (e) => e.reason, isWrappable: true },
+                { name: "Status", value: (e) => e.status },
+            ]}
+            getActions={(e) => [
+                <div className="flex flex-col gap-5">
+                    {e.status !== 'COMPLETED' && (
+                    <button
+                        key="set-completed"
+                        onClick={() => setSelectedExamination(e)}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
+                    >
+                        Set completed
+                    </button>)}
+                </div>,
+            ]}
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+            shouldScroll={shouldScroll}
+            setShouldScroll={setShouldScroll}
+            emptyMessage="No examinations found"
+        />
+            {selectedExamination && (
+                <MedicalRecordFormModal
+                    examination={selectedExamination}
+                    onClose={() => setSelectedExamination(null)}
+                />
+            )}
+        </>);
+}
