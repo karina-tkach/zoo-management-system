@@ -8,6 +8,8 @@ import org.university.zoomanagementsystem.user.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Optional;
 
 public class ExaminationScheduleMapper {
     private ExaminationScheduleMapper() {}
@@ -31,6 +33,9 @@ public class ExaminationScheduleMapper {
                 new User(rs.getInt("vet_id"),rs.getString("user_name"), null, rs.getString("email"), null),
                 rs.getTimestamp("planned_datetime").toLocalDateTime(),
                 rs.getString("reason"),
-                ExaminationStatus.valueOf(rs.getString("status")));
+                ExaminationStatus.valueOf(rs.getString("status")),
+                Optional.ofNullable(rs.getTimestamp("completed_at"))
+                        .map(Timestamp::toLocalDateTime)
+                        .orElse(null));
     }
 }

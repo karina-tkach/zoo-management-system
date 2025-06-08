@@ -7,6 +7,7 @@ CREATE TABLE vet_examination_schedules (
                                   planned_datetime TIMESTAMP NOT NULL,
                                   reason TEXT NOT NULL,
                                   status examination_status_enum NOT NULL DEFAULT 'PLANNED',
+                                  completed_at TIMESTAMP,
                                   UNIQUE(animal_id, planned_datetime),
                                   UNIQUE (vet_id, planned_datetime)
 );

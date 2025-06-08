@@ -3,7 +3,7 @@ CREATE TABLE staff (
                        user_id INT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
                        hire_date DATE NOT NULL,
                        salary BIGINT NOT NULL,
-                       working_days VARCHAR(100),
+                       working_days VARCHAR(100) NOT NULL,
                        shift_start TIME NOT NULL,
                        shift_end TIME NOT NULL
 );

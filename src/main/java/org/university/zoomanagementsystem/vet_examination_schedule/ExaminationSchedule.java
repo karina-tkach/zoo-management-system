@@ -13,6 +13,7 @@ public class ExaminationSchedule {
     private LocalDateTime plannedDateTime;
     private String reason;
     private ExaminationStatus status;
+    private LocalDateTime completedAt;
 
     public ExaminationSchedule() {
         this.id = -1;
@@ -21,15 +22,17 @@ public class ExaminationSchedule {
         this.plannedDateTime = null;
         this.reason = null;
         this.status = null;
+        this.completedAt = null;
     }
 
-    public ExaminationSchedule(int id, Animal animal, User veterinarian, LocalDateTime plannedDateTime, String reason, ExaminationStatus status) {
+    public ExaminationSchedule(int id, Animal animal, User veterinarian, LocalDateTime plannedDateTime, String reason, ExaminationStatus status, LocalDateTime completedAt) {
         this.id = id;
         this.animal = animal;
         this.veterinarian = veterinarian;
         this.plannedDateTime = plannedDateTime;
         this.reason = reason;
         this.status = status;
+        this.completedAt = completedAt;
     }
 
     public int getId() {
@@ -80,17 +83,25 @@ public class ExaminationSchedule {
         this.status = status;
     }
 
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ExaminationSchedule that = (ExaminationSchedule) o;
-        return id == that.id && Objects.equals(animal, that.animal) && Objects.equals(veterinarian, that.veterinarian) && Objects.equals(plannedDateTime, that.plannedDateTime) && Objects.equals(reason, that.reason) && status == that.status;
+        return id == that.id && Objects.equals(animal, that.animal) && Objects.equals(veterinarian, that.veterinarian) && Objects.equals(plannedDateTime, that.plannedDateTime) && Objects.equals(reason, that.reason) && status == that.status && Objects.equals(completedAt, that.completedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, animal, veterinarian, plannedDateTime, reason, status);
+        return Objects.hash(id, animal, veterinarian, plannedDateTime, reason, status, completedAt);
     }
 
     @Override
@@ -102,6 +113,7 @@ public class ExaminationSchedule {
                 ", plannedDateTime=" + plannedDateTime +
                 ", reason='" + reason + '\'' +
                 ", status=" + status +
+                ", completedAt=" + completedAt +
                 '}';
     }
 }

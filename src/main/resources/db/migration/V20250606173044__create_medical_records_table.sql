@@ -30,7 +30,8 @@ SET health_status = CASE
 WHERE id = a_id;
 
 UPDATE vet_examination_schedules
-SET status = 'COMPLETED'::examination_status_enum
+SET status = 'COMPLETED'::examination_status_enum,
+    completed_at = NOW()
 WHERE id = NEW.examination_id;
 
 -- Try to insert follow-up exam if diagnosis exists

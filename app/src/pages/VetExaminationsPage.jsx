@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {fetchData} from "../utils/fetch.js";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {deleteData, fetchData} from "../utils/fetch.js";
 import {useLoading} from "../utils/useLoading.jsx";
 import LoadingPage from "./LoadingPage.jsx";
 import GenericTablePage from "./GenericTablePage.jsx";
@@ -13,7 +13,7 @@ export default function VetExaminationsPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [shouldScroll, setShouldScroll] = useState(false);
     const navigate = useNavigate();
-    const { loading, start, stop } = useLoading();
+    const {loading, start, stop} = useLoading();
     const [selectedExamination, setSelectedExamination] = useState(null);
 
 
@@ -35,52 +35,99 @@ export default function VetExaminationsPage() {
         fetchExaminations();
     }, [page, pageSize, navigate, selectedExamination]);
 
+    const handleDelete = (id) => {
+        deleteData({
+            url: `/api/examination-schedules/${id}`,
+            confirmMessage: "Are you sure you want to delete this examination schedule?",
+            errorMessage: "Failed to delete examination schedule",
+            onSuccess: (resData) => {
+                setExaminations(examinations.filter((e) => e.id !== id));
+                alert(resData.message || "Examination schedule deleted successfully");
+            },
+            onError: (message) => alert(message),
+            navigate,
+        });
+    };
+
     if (loading) {
         return <LoadingPage/>;
     }
 
     return (
         <>
-        <GenericTablePage
-            title="My Examination Schedules List"
-            data={examinations}
-            columns={[
-                { name: "Animal name", value: (e) => e.animal.name },
-                { name: "Animal habitat type", value: (e) => e.animal.habitatType },
-                { name: "Enclosure", value: (e) => `${e.animal.enclosure.name} | ${e.animal.enclosure.location} | ${e.animal.enclosure.areaM2}`, isWrappable: true },
-                { name: "Animal health status", value: (e) => e.animal.healthStatus },
-                { name: "Image", value: (e) => (
-                        <img
-                            src={`/${e.animal.image}`}
-                            alt={e.animal.name}
-                            className="w-[190px] h-[120px] object-cover rounded-md border"
-                            onError={(err) => (err.currentTarget.style.display = "none")}
-                        />
-                    ),},
-                { name: "Last Checked Up At", value: (e) => e.animal.lastCheckedUpAt.slice(0, 16).replace("T", " "), isWrappable: true },
-                { name: "Planned time", value: (e) => e.plannedDateTime.slice(0, 16).replace("T", " "), isWrappable: true },
-                { name: "Reason", value: (e) => e.reason, isWrappable: true },
-                { name: "Status", value: (e) => e.status },
-            ]}
-            getActions={(e) => [
-                <div className="flex flex-col gap-5">
-                    {e.status !== 'COMPLETED' && (
-                    <button
-                        key="set-completed"
-                        onClick={() => setSelectedExamination(e)}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
-                    >
-                        Set completed
-                    </button>)}
-                </div>,
-            ]}
-            page={page}
-            setPage={setPage}
-            totalPages={totalPages}
-            shouldScroll={shouldScroll}
-            setShouldScroll={setShouldScroll}
-            emptyMessage="No examinations found"
-        />
+            <GenericTablePage
+                title="My Examination Schedules List"
+                data={examinations}
+                columns={[
+                    {name: "Animal name", value: (e) => e.animal.name},
+                    {name: "Animal habitat type", value: (e) => e.animal.habitatType},
+                    {
+                        name: "Enclosure",
+                        value: (e) => `${e.animal.enclosure.name} | ${e.animal.enclosure.location} | ${e.animal.enclosure.areaM2}`,
+                        isWrappable: true
+                    },
+                    {name: "Animal health status", value: (e) => e.animal.healthStatus},
+                    {
+                        name: "Image", value: (e) => (
+                            <img
+                                src={`/${e.animal.image}`}
+                                alt={e.animal.name}
+                                className="w-[190px] h-[120px] object-cover rounded-md border"
+                                onError={(err) => (err.currentTarget.style.display = "none")}
+                            />
+                        ),
+                    },
+                    {
+                        name: "Last Checked Up At",
+                        value: (e) => e.animal.lastCheckedUpAt.slice(0, 16).replace("T", " "),
+                        isWrappable: true
+                    },
+                    {
+                        name: "Planned time",
+                        value: (e) => e.plannedDateTime.slice(0, 16).replace("T", " "),
+                        isWrappable: true
+                    },
+                    {name: "Reason", value: (e) => e.reason, isWrappable: true},
+                    {name: "Status", value: (e) => e.status},
+                    { name: "Completed at", value: (e) => e.completedAt?.slice(0, 16).replace("T", " ") || '', isWrappable: true },
+                ]}
+                getActions={(e) => [
+                    <div className="flex flex-col gap-5">
+                        {e.status !== 'COMPLETED' && (
+                            <>
+                                <button
+                                    key="set-completed"
+                                    onClick={() => setSelectedExamination(e)}
+                                    className="bg-lime-600 hover:bg-lime-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
+                                >
+                                    Set completed
+                                </button>
+                                <button
+                                    key="update"
+                                    onClick={() => navigate(`/my/examinations/edit/${e.id}`)}
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
+                                >
+                                    Update
+                                </button>
+                            </>)}
+                        <button
+                            key="delete"
+                            onClick={() => handleDelete(e.id)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm font-semibold"
+                        >
+                            Delete
+                        </button>
+                    </div>,
+                ]}
+                page={page}
+                setPage={setPage}
+                totalPages={totalPages}
+                shouldScroll={shouldScroll}
+                setShouldScroll={setShouldScroll}
+                addButtonPath="/my/examinations/add"
+                addButtonText="Add My Examination Schedule"
+                emptyMessage="No examinations found"
+            />
             {selectedExamination && (
                 <MedicalRecordFormModal
                     examination={selectedExamination}

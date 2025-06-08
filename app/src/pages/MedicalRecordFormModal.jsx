@@ -27,7 +27,6 @@ export default function MedicalRecordFormModal({examination, onClose}) {
         };
 
         setServerError('');
-        onClose();
 
         await submitData({
             url: '/api/medical-records',
@@ -39,6 +38,8 @@ export default function MedicalRecordFormModal({examination, onClose}) {
             successPath: "/my/examinations",
             onValidationError: setServerError,
         });
+        onClose();
+
     };
 
     if (loading) {

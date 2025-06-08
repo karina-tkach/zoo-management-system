@@ -6,7 +6,7 @@ CREATE TABLE events (
                         start_time TIME NOT NULL,
                         duration_minutes INTEGER NOT NULL,
                         location VARCHAR(150) NOT NULL,
-                        image VARCHAR(255)
+                        image VARCHAR(255) NOT NULL
 );
 
 INSERT INTO events (title, description, date, start_time, duration_minutes, location, image)

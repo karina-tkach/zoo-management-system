@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.university.zoomanagementsystem.user.Role;
 import org.university.zoomanagementsystem.vet_examination_schedule.ExaminationSchedule;
 import org.university.zoomanagementsystem.user.User;
 import org.university.zoomanagementsystem.user.service.UserService;
@@ -104,23 +105,44 @@ public class ExaminationScheduleController {
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'VETERINARIAN')")
     @PostMapping
-    public ResponseEntity<ExaminationSchedule> addExaminationSchedule(@RequestBody ExaminationSchedule examinationSchedule) {
+    public ResponseEntity<?> addExaminationSchedule(@RequestBody ExaminationSchedule examinationSchedule,
+                                                                      Principal principal) {
+        User user = userService.getUserByEmail(principal.getName());
+        if (user.getRole().equals(Role.VETERINARIAN)) {
+            examinationSchedule.setVeterinarian(user);
+        }
         ExaminationSchedule createdExaminationSchedule = examinationScheduleService.addExaminationSchedule(examinationSchedule);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdExaminationSchedule);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'VETERINARIAN')")
     @PatchMapping("/{id}")
-    public ResponseEntity<ExaminationSchedule> updateExaminationSchedule(
+    public ResponseEntity<?> updateExaminationSchedule(
             @PathVariable int id,
-            @RequestBody ExaminationSchedule examinationSchedule) {
+            @RequestBody ExaminationSchedule examinationSchedule,
+            Principal principal) {
+        User user = userService.getUserByEmail(principal.getName());
+        ExaminationSchedule examinationScheduleExists = examinationScheduleService.getExaminationScheduleById(id);
+        if (user.getRole().equals(Role.VETERINARIAN)) {
+            examinationSchedule.setVeterinarian(user);
+        }
+        if (user.getRole().equals(Role.VETERINARIAN)
+                && examinationScheduleExists.getVeterinarian().getId() != user.getId()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Cannot update examination schedule of different vet"));
+        }
         ExaminationSchedule updatedExaminationSchedule = examinationScheduleService.updateExaminationScheduleById(examinationSchedule, id);
         return ResponseEntity.ok(updatedExaminationSchedule);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'VETERINARIAN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteExaminationSchedule(@PathVariable int id) {
+    public ResponseEntity<?> deleteExaminationSchedule(@PathVariable int id, Principal principal) {
+        User user = userService.getUserByEmail(principal.getName());
+        ExaminationSchedule examinationSchedule = examinationScheduleService.getExaminationScheduleById(id);
+        if (user.getRole().equals(Role.VETERINARIAN) && examinationSchedule.getVeterinarian().getId() != user.getId()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Cannot delete examination schedule of different vet"));
+        }
+
         examinationScheduleService.deleteExaminationScheduleById(id);
         return ResponseEntity.ok(Map.of("message", String.format("Examination schedule with id %d was successfully deleted", id)));
     }

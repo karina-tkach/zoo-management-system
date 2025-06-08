@@ -109,7 +109,7 @@ public class ExaminationScheduleService {
         try {
             ExaminationSchedule examinationScheduleToUpdate = getExaminationScheduleById(id);
             logger.info("Try to update examination schedule");
-            if (examinationSchedule.getStatus().equals(ExaminationStatus.COMPLETED)) {
+            if (examinationScheduleToUpdate.getStatus().equals(ExaminationStatus.COMPLETED)) {
                 throw new ExaminationScheduleValidationException("Cannot update examination schedule as it is already completed");
             }
 

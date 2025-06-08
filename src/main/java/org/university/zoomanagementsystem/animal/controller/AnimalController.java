@@ -97,7 +97,7 @@ public class AnimalController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'VETERINARIAN')")
     @GetMapping("/all/by-habitat")
     public ResponseEntity<List<Animal>> getAnimalsByHabitat(
             @RequestParam("habitat") HabitatType habitatType) {

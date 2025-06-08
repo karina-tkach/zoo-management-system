@@ -56,6 +56,7 @@ export default function AnimalExaminationsPage() {
                 { name: "Planned time", value: (e) => e.plannedDateTime },
                 { name: "Reason", value: (e) => e.reason },
                 { name: "Status", value: (e) => e.status },
+                { name: "Completed at", value: (e) => e.completedAt?.slice(0, 16).replace("T", " ") || '', isWrappable: true },
             ]}
             page={page}
             setPage={setPage}

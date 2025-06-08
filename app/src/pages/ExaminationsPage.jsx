@@ -103,6 +103,7 @@ export default function ExaminationsPage() {
                 { name: "Planned time", value: (e) => e.plannedDateTime.slice(0, 16).replace("T", " "), isWrappable: true },
                 { name: "Reason", value: (e) => e.reason, isWrappable: true },
                 { name: "Status", value: (e) => e.status },
+                { name: "Completed at", value: (e) => e.completedAt?.slice(0, 16).replace("T", " ") || '', isWrappable: true },
             ]}
             getActions={(e) => [
                 <div className="flex flex-col gap-5">
