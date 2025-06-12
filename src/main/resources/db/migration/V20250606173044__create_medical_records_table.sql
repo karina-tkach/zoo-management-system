@@ -1,6 +1,6 @@
 CREATE TABLE medical_records (
                                         id SERIAL PRIMARY KEY,
-                                        examination_id INTEGER NOT NULL REFERENCES vet_examination_schedules(id) ON DELETE CASCADE,
+                                        examination_id INTEGER NOT NULL UNIQUE REFERENCES vet_examination_schedules(id) ON DELETE CASCADE,
                                         diagnosis TEXT,
                                         treatment TEXT,
                                         notes TEXT,

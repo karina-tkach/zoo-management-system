@@ -14,7 +14,7 @@ VALUES
     (
         'Meet the Vet',
         'An interactive lecture for kids about animal health in the zoo.',
-        '2025-06-10',
+        '2025-06-30',
         '11:00:00',
         90,
         'Conference Hall #1',
