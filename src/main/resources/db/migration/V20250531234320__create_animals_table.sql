@@ -33,4 +33,11 @@ VALUES
 
 ('Lu', 'Snow Leopard', 'MAMMALS', 'MOUNTAIN', 'FEMALE', '2017-12-10', 6, 'show_leopard.jpg'),
 
-('Gary', 'Zebra', 'MAMMALS', 'SAVANNA', 'MALE', '2019-04-25', 7, 'zebra.jpg');
+('Gary', 'Zebra', 'MAMMALS', 'SAVANNA', 'MALE', '2019-04-25', 7, 'zebra.jpg'),
+
+('Polly', 'Emperor Penguin', 'BIRDS', 'POLAR', 'FEMALE', '2020-02-14', 8, 'emperor_penguin.jpg'),
+('Sandy', 'Desert Tortoise', 'REPTILES', 'DESERT', 'MALE', '2015-06-20', 9, 'desert_tortoise.jpg'),
+('Gerry', 'Meadowlark', 'BIRDS', 'GRASSLAND', 'MALE', '2021-07-12', 10, 'meadowlark.jpg'),
+('Coral', 'Clownfish', 'FISH', 'AQUATIC', 'FEMALE', '2022-04-10', 11, 'clownfish2.jpg'),
+('Forest', 'Howler Monkey', 'MAMMALS', 'FOREST', 'MALE', '2019-11-05', 12, 'howler_monkey.jpg'),
+('Marsh', 'American Bullfrog', 'AMPHIBIANS', 'WETLAND', 'OTHER', '2023-05-15', 13, 'bullfrog.jpg');

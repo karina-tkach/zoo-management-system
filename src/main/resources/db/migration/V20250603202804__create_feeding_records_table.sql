@@ -5,6 +5,24 @@ CREATE TABLE feeding_records (
                           UNIQUE(feeding_schedule_id, date)
 );
 
+INSERT INTO feeding_records (feeding_schedule_id, date) VALUES
+                                                            (1, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (2, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (3, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (4, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (5, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (6, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (7, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (8, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (9, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (10, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (11, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (12, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (13, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (14, CURRENT_DATE - INTERVAL '1 day'),
+                                                            (15, CURRENT_DATE - INTERVAL '1 day');
+
+
 
 CREATE OR REPLACE FUNCTION feeding_schedule_update_trigger()
 RETURNS TRIGGER AS $$

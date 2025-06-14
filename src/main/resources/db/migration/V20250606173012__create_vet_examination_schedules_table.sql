@@ -12,6 +12,25 @@ CREATE TABLE vet_examination_schedules (
                                   UNIQUE (vet_id, planned_datetime)
 );
 
+INSERT INTO vet_examination_schedules (animal_id, vet_id, planned_datetime, reason, status)
+VALUES
+    (1, 3, NOW() + INTERVAL '1 day', 'Routine check-up', 'PLANNED'),
+    (2, 10, NOW() + INTERVAL '2 day', 'Vaccination', 'PLANNED'),
+    (3, 3, NOW() + INTERVAL '3 day', 'Dental check', 'PLANNED'),
+    (4, 10, NOW() + INTERVAL '4 day', 'Injury assessment', 'PLANNED'),
+    (5, 3, NOW() + INTERVAL '5 day', 'Weight monitoring', 'PLANNED'),
+    (6, 10, NOW() + INTERVAL '6 day', 'Skin condition check', 'PLANNED'),
+    (7, 3, NOW() + INTERVAL '7 day', 'Follow-up visit', 'PLANNED'),
+    (8, 10, NOW() + INTERVAL '8 day', 'Parasite control', 'PLANNED'),
+    (9, 3, NOW() + INTERVAL '9 day', 'Behavioral observation', 'PLANNED'),
+    (10, 10, NOW() + INTERVAL '10 day', 'Nutrition assessment', 'PLANNED'),
+    (11, 3, NOW() + INTERVAL '11 day', 'Vaccination', 'PLANNED'),
+    (12, 10, NOW() + INTERVAL '12 day', 'Routine check-up', 'PLANNED'),
+    (13, 3, NOW() + INTERVAL '13 day', 'Dental check', 'PLANNED'),
+    (14, 10, NOW() + INTERVAL '14 day', 'Injury assessment', 'PLANNED'),
+    (15, 3, NOW() + INTERVAL '15 day', 'Skin condition check', 'PLANNED');
+
+
 CREATE OR REPLACE PROCEDURE mark_animals_needing_checkup()
 AS $$
 DECLARE

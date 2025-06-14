@@ -6,6 +6,7 @@ CREATE TABLE visit_logs (
                             notes TEXT
 );
 
-INSERT INTO visit_logs (gate_id, ticket_id, notes) VALUES
-(1, 1, 'Normal entry'),
-(2, 2, 'Late visitor');
+INSERT INTO visit_logs (gate_id, ticket_id, entry_time, notes) VALUES
+                                                                   (1, 1, CURRENT_DATE + INTERVAL '10 hours', 'Normal entry at 10:00'),
+                                                                   (2, 4, CURRENT_DATE + INTERVAL '11 hours', 'Entry at 11:00'),
+                                                                   (3, 9, CURRENT_DATE + INTERVAL '12 hours', 'Entry at noon');
