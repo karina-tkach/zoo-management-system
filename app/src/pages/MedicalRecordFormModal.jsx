@@ -27,6 +27,7 @@ export default function MedicalRecordFormModal({examination, onClose}) {
         };
 
         setServerError('');
+        let validationErrorOccurred = false;
 
         await submitData({
             url: '/api/medical-records',
@@ -36,9 +37,15 @@ export default function MedicalRecordFormModal({examination, onClose}) {
             entityName: "Medical Record",
             navigate,
             successPath: "/my/examinations",
-            onValidationError: setServerError,
+            onValidationError: (error) => {
+                validationErrorOccurred = true;
+                setServerError(error);
+            }
         });
-        onClose();
+
+        if (!validationErrorOccurred) {
+            onClose();
+        }
 
     };
 
